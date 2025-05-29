@@ -1,0 +1,117 @@
+package com.tilldawn.model;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+
+public class GameAssetsManager {
+    private static GameAssetsManager gameAssetsManager;
+    private Skin skin;
+    private Texture gameLogo;
+    private Texture backgroundTex;
+    private Texture backgroundTex2;
+    private Music music1;
+    private Music music2;
+    private Music currentMusic;
+    private Preferences preferences;
+    private final String bullet;
+
+    // Private constructor for singleton
+    private GameAssetsManager() {
+        // Ensure these file paths exist in your assets folder
+        skin = new Skin(Gdx.files.internal("star-soldier/skin/star-soldier-ui.json"));
+        gameLogo = new Texture(Gdx.files.internal("Images_grouped_1/Sprite/T/T_20Logo.png"));
+        backgroundTex = new Texture(Gdx.files.internal("Images_grouped_1/Sprite/T/T_TitleLeaves.png"));
+        backgroundTex2 = new Texture(Gdx.files.internal("Images_grouped_1/Sprite/T/T_TitleLeaves2.png"));
+
+        music1 = Gdx.audio.newMusic(Gdx.files.internal("SFX/Pretty_Dungeon.mp3"));
+        music2 = Gdx.audio.newMusic(Gdx.files.internal("SFX/Wasteland Combat.mp3"));
+
+        music1.setLooping(true);
+        music2.setLooping(true);
+
+        preferences = Gdx.app.getPreferences("GameSettings");
+        currentMusic = getSelectedMusic();
+
+        float volume = preferences.getFloat("musicVolume", 0.5f);
+        currentMusic.setVolume(volume);
+
+        bullet = "Images_grouped_1/Sprite/Icon/Icon_Bullet_Storm.png";
+
+    }
+
+    /**
+     * Returns the singleton instance, creating it if necessary.
+     */
+    public static GameAssetsManager getGameAssetsManager() {
+        if (gameAssetsManager == null) {
+            gameAssetsManager = new GameAssetsManager();
+        }
+        return gameAssetsManager;
+    }
+
+    public void playMusic() {
+        if (currentMusic != null && !currentMusic.isPlaying()) {
+            currentMusic.play();
+        }
+    }
+
+    public void stopMusic() {
+        if (currentMusic != null && currentMusic.isPlaying()) {
+            currentMusic.stop();
+        }
+    }
+
+    public void setMusicVolume(float volume) {
+        if (currentMusic != null) {
+            currentMusic.setVolume(volume);
+        }
+        preferences.putFloat("musicVolume", volume);
+        preferences.flush();
+    }
+
+    public void switchMusic(int musicIndex) {
+        stopMusic();
+        currentMusic = (musicIndex == 0) ? music1 : music2;
+        currentMusic.setVolume(preferences.getFloat("musicVolume", 0.5f));
+        playMusic();
+        preferences.putInteger("selectedMusic", musicIndex);
+        preferences.flush();
+    }
+
+    private Music getSelectedMusic() {
+        int selected = preferences.getInteger("selectedMusic", 0);
+        return (selected == 0) ? music1 : music2;
+    }
+
+    public int getCurrentMusicIndex() {
+        return (currentMusic == music1) ? 0 : 1;
+    }
+
+    public float getCurrentVolume() {
+        return preferences.getFloat("musicVolume", 0.5f);
+    }
+
+    public Skin getSkin() {
+        return skin;
+    }
+
+    public Texture getGameLogo() {
+        return gameLogo;
+    }
+
+    public Texture getBackgroundTex() {
+        return backgroundTex;
+    }
+
+    public Texture getBackgroundTex2() {
+        return backgroundTex2;
+    }
+
+    public String getBullet() {
+        return bullet;
+    }
+}

@@ -18,6 +18,9 @@ public class GameAssetsManager {
     private Music currentMusic;
     private Preferences preferences;
     private final String bullet;
+    private Texture backgroundTexture;
+
+    private Texture enemyTexture = new Texture("Images_grouped_1/Sprite/EyeMonster/EyeMonster_0.png");
 
     // Private constructor for singleton
     private GameAssetsManager() {
@@ -40,6 +43,7 @@ public class GameAssetsManager {
         currentMusic.setVolume(volume);
 
         bullet = "Images_grouped_1/Sprite/Icon/Icon_Bullet_Storm.png";
+        this.backgroundTexture = new Texture("background.png");
 
     }
 
@@ -113,5 +117,13 @@ public class GameAssetsManager {
 
     public String getBullet() {
         return bullet;
+    }
+
+    public Texture getEnemyTexture() {
+        return enemyTexture;
+    }
+
+    public Texture getBackgroundTexture() {
+        return backgroundTexture;
     }
 }

@@ -41,7 +41,7 @@ public class WeaponController {
         weapon.setAmmo(weapon.getAmmo() - 1);
     }
 
-    public void updateBullets() {
+    public void updateBullets() { //TODO: add shooting here
         for(Bullet b : bullets) {
             b.getSprite().draw(Main.getBatch());
             Vector2 direction = new Vector2(

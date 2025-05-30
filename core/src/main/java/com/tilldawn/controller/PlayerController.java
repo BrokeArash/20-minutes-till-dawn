@@ -4,16 +4,26 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.tilldawn.Main;
 import com.tilldawn.model.App;
 import com.tilldawn.model.Player;
 
 public class PlayerController {
     private Player player;
+    private float speed;
+    private WorldController worldController;
 
     public PlayerController(Player player){
         this.player = player;
+        this.speed = player.getHero().getSpeed();
+
+        player.setPosX(0);
+        player.setPosY(0);
+
+    }
+
+    public void setWorldController(WorldController worldController) {
+        this.worldController = worldController;
     }
 
     public void update(){
@@ -26,20 +36,45 @@ public class PlayerController {
         handlePlayerInput();
     }
 
-
     public void handlePlayerInput(){
+        float currentX = player.getPosX();
+        float currentY = player.getPosY();
+        float newX = currentX;
+        float newY = currentY;
+
+        boolean moved = false;
+
         if (Gdx.input.isKeyPressed(Input.Keys.W)){
-            player.setPosY(player.getPosY() + player.getSpeed());
+            newY += player.getSpeed();
+            moved = true;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.D)){
-            player.setPosX(player.getPosX() + player.getSpeed());
+            newX += player.getSpeed();
+            moved = true;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.S)){
-            player.setPosY(player.getPosY() - player.getSpeed());
+            newY -= player.getSpeed();
+            moved = true;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.A)){
-            player.setPosX(player.getPosX() - player.getSpeed());
+            newX -= player.getSpeed();
             player.getPlayerSprite().flip(true, false);
+            moved = true;
+        }
+
+        if (moved && worldController != null) {
+            float playerWidth = player.getPlayerSprite().getWidth();
+            float playerHeight = player.getPlayerSprite().getHeight();
+
+            if (worldController.isPositionValid(newX, newY, playerWidth, playerHeight)) {
+                player.setPosX(newX);
+                player.setPosY(newY);
+            } else {
+                float clampedX = worldController.clampX(newX, playerWidth);
+                float clampedY = worldController.clampY(newY, playerHeight);
+                player.setPosX(clampedX);
+                player.setPosY(clampedY);
+            }
         }
     }
 

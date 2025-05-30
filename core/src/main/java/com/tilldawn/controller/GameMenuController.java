@@ -14,6 +14,7 @@ public class GameMenuController {
         this.view = view;
         playerController = new PlayerController(App.getGame().getPlayer());
         worldController = new WorldController(playerController);
+        playerController.setWorldController(worldController);
         weaponController = new WeaponController(App.getGame().getPlayer().getWeapon());
         enemyController = new EnemyController(playerController, worldController);
     }

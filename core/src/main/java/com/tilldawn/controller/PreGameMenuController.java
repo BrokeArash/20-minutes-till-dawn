@@ -27,15 +27,12 @@ public class PreGameMenuController {
             public void clicked(InputEvent event, float x, float y) {
 
                 try {
-                    // Get selections
                     String hero = view.getHeroes().getSelected();
                     String weapon = view.getWeapon().getSelected();
                     String mode = view.getMode().getSelected();
 
-                    // Set user selections
                     setUserSelections(hero, weapon, mode);
 
-                    // Transition to game screen
                     Main.getMain().changeScreen(new GameMenu(
                         new GameMenuController(),
                         GameAssetsManager.getGameAssetsManager().getSkin()

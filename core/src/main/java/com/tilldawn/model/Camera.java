@@ -15,13 +15,19 @@ public class Camera {
         this.targetY = 0;
     }
 
+    public void initialize(float playerX, float playerY) {
+        this.x = playerX;
+        this.y = playerY;
+        this.targetX = playerX;
+        this.targetY = playerY;
+    }
+
     public void setTarget(float targetX, float targetY) {
         this.targetX = targetX;
         this.targetY = targetY;
     }
 
     public void update() {
-        // Smooth camera following (optional - you can make it instant)
         float lerp = 5.0f * Gdx.graphics.getDeltaTime();
         this.x += (targetX - x) * lerp;
         this.y += (targetY - y) * lerp;
@@ -35,7 +41,6 @@ public class Camera {
         return worldY - y + (Gdx.graphics.getHeight() / 2f);
     }
 
-    // Convert screen coordinates to world coordinates
     public float getWorldX(float screenX) {
         return screenX + x - (Gdx.graphics.getWidth() / 2f);
     }

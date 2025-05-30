@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 
 public enum Hero {
 
-
     DIAMOND("Diamond", 7, 1,
         "Heros/Heros/Diamond/idle/Idle_0 #8328.png",
         "Heros/Heros/Diamond/idle/Idle_1 #8358.png",

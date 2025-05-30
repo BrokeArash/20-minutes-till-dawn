@@ -29,16 +29,16 @@ public class PlayerController {
 
     public void handlePlayerInput(){
         if (Gdx.input.isKeyPressed(Input.Keys.W)){
-            player.setPosY(player.getPosY() - player.getSpeed());
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.D)){
-            player.setPosX(player.getPosX() - player.getSpeed());
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.S)){
             player.setPosY(player.getPosY() + player.getSpeed());
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.A)){
+        if (Gdx.input.isKeyPressed(Input.Keys.D)){
             player.setPosX(player.getPosX() + player.getSpeed());
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.S)){
+            player.setPosY(player.getPosY() - player.getSpeed());
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.A)){
+            player.setPosX(player.getPosX() - player.getSpeed());
             player.getPlayerSprite().flip(true, false);
         }
     }

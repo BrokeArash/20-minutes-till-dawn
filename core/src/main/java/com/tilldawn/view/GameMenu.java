@@ -5,6 +5,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.tilldawn.Main;
@@ -15,15 +16,23 @@ public class GameMenu implements Screen, InputProcessor {
 
     private Stage stage;
     private GameMenuController controller;
+    private TextField bulletNum;
 
     public GameMenu(GameMenuController controller, Skin skin) {
         this.controller = controller;
         controller.setView(this);
+        int ammo = App.getGame().getPlayer().getWeapon().getCurrentAmmo();
+        bulletNum = new TextField(String.valueOf(ammo), skin);
+        bulletNum.setPosition(10, Gdx.graphics.getHeight() - 30); // Adjust position
+        bulletNum.setSize(100, 30); // Set size
+        bulletNum.setDisabled(true); // Make it read-only
+
+        stage = new Stage(new ScreenViewport());
+        stage.addActor(bulletNum);
     }
 
     @Override
     public void show() {
-        stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(this);
 
         App.getGame().getPlayer().setInitialPosition();
@@ -34,13 +43,16 @@ public class GameMenu implements Screen, InputProcessor {
 
     @Override
     public void render(float delta) {
-        ScreenUtils.clear(0, 0, 0, 1);
-        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
-        stage.draw();
+        Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
+        Gdx.gl.glClear(Gdx.gl.GL_COLOR_BUFFER_BIT);
 
         Main.getBatch().begin();
         controller.updateGame();
         Main.getBatch().end();
+
+        bulletNum.setText(String.valueOf(App.getGame().getPlayer().getWeapon().getCurrentAmmo()));
+        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+        stage.draw();
 
     }
 
@@ -113,5 +125,9 @@ public class GameMenu implements Screen, InputProcessor {
     @Override
     public boolean scrolled(float amountX, float amountY) {
         return false;
+    }
+
+    public TextField getBulletNum() {
+        return bulletNum;
     }
 }

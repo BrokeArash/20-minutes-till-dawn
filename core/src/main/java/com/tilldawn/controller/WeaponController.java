@@ -37,8 +37,11 @@ public class WeaponController {
     }
 
     public void handleWeaponShoot(int x, int y){
+        if (weapon.getCurrentAmmo() < 1) {
+            return;
+        }
         bullets.add(new Bullet(x, y));
-        weapon.setAmmo(weapon.getAmmo() - 1);
+        weapon.shootBullet();
     }
 
     public void updateBullets() { //TODO: add shooting here

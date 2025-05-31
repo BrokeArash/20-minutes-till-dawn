@@ -1,9 +1,13 @@
 package com.tilldawn.controller;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.TextureData;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.tilldawn.Main;
 import com.tilldawn.model.Camera;
 import com.tilldawn.model.GameAssetsManager;
+
+import java.awt.*;
 
 public class WorldController {
     private PlayerController playerController;
@@ -12,6 +16,7 @@ public class WorldController {
     private float backgroundWidth;
     private float backgroundHeight;
     private boolean cameraInitialized = false;
+
 
     public WorldController(PlayerController playerController) {
         this.backgroundTexture = GameAssetsManager.getGameAssetsManager().getBackgroundTexture();

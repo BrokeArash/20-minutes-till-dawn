@@ -39,4 +39,8 @@ public class GameMenuController {
     public EnemyController getEnemyController() {
         return enemyController;
     }
+
+    public GameMenu getView() {
+        return view;
+    }
 }

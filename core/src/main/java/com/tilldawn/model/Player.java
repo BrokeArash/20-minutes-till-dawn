@@ -4,7 +4,10 @@ package com.tilldawn.model;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Rectangle;
 import com.tilldawn.model.enums.Hero;
+
+import java.awt.*;
 
 public class Player {
 
@@ -16,7 +19,7 @@ public class Player {
     private float posX = 0;
     private float posY = 0;
     private float playerHealth = 100;
-    private CollisionRect rect ;
+    private Rectangle rect ;
     private float time = 0;
     private float speed = 5;
 
@@ -32,7 +35,7 @@ public class Player {
         float centerX = (float) Gdx.graphics.getWidth() / 2 - playerSprite.getWidth() / 2;
         float centerY = (float) Gdx.graphics.getHeight() / 2 - playerSprite.getHeight() / 2;
         playerSprite.setPosition(centerX, centerY);
-        rect = new CollisionRect(centerX, centerY, playerTexture.getWidth() * 3, playerTexture.getHeight() * 3);
+        rect = new Rectangle(centerX, centerY, playerTexture.getWidth() * 3, playerTexture.getHeight() * 3);
     }
 
     public Hero getHero() {
@@ -87,18 +90,17 @@ public class Player {
         return playerHealth;
     }
 
-    public void setPlayerHealth(float playerHealth) {
-        this.playerHealth = playerHealth;
+    public void takeDamage(float playerHealth) {
+        this.playerHealth -= playerHealth;
     }
 
-    public CollisionRect getRect() {
+    public Rectangle getRect() {
         return rect;
     }
 
-    public void setRect(CollisionRect rect) {
+    public void setRect(Rectangle rect) {
         this.rect = rect;
     }
-
 
     public boolean isPlayerIdle() {
         return isPlayerIdle;

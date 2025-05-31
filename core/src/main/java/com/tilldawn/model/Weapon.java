@@ -16,6 +16,7 @@ public class Weapon {
     private float reloadTime;
     private float reloadTimer;
     private Sound reloadSound;
+    private Sound gunshot;
     private boolean isReloading = false;
 
     public Weapon(WeaponEnum weapon) {
@@ -29,6 +30,7 @@ public class Weapon {
         currentAmmo = maxAmmo;
         this.reloadTime = weapon.getTimeReload();
         this.reloadSound = GameAssetsManager.getGameAssetsManager().getReloadSound();
+        this.gunshot = GameAssetsManager.getGameAssetsManager().getGunshot();
         this.isReloading = false;
         this.reloadTimer = 0;
     }
@@ -82,5 +84,9 @@ public class Weapon {
 
     public void shootBullet() {
         this.currentAmmo --;
+    }
+
+    public Sound getGunshot() {
+        return gunshot;
     }
 }

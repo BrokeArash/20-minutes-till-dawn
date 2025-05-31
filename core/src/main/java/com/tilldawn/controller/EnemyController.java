@@ -3,17 +3,20 @@ package com.tilldawn.controller;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.utils.Array;
 import com.tilldawn.Main;
+import com.tilldawn.model.App;
 import com.tilldawn.model.Camera;
 import com.tilldawn.model.Enemy;
-import com.tilldawn.model.GameAssetsManager;
 import com.tilldawn.model.Player;
+import com.tilldawn.model.enums.EnemyEnum;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 public class EnemyController {
-    private List<Enemy> enemies;
+    private static List<Enemy> enemies;
     private PlayerController playerController;
     private WorldController worldController;
     private Texture enemyTexture;
@@ -21,22 +24,27 @@ public class EnemyController {
     private float spawnInterval = 2.0f;
     private int maxEnemies = 10;
     private float spawnRadius = 300f;
-    private float enemyWidth = 32f; // Default enemy width
-    private float enemyHeight = 32f; // Default enemy height
+    private EnemyEnum type;
+    private float enemyWidth;
+    private float enemyHeight;
+    private Array<EnemyEnum> spawnable = new Array<>();
 
     public EnemyController(PlayerController playerController, WorldController worldController) {
         this.playerController = playerController;
         this.worldController = worldController;
         this.enemies = new ArrayList<>();
-        this.enemyTexture = GameAssetsManager.getGameAssetsManager().getEnemyTexture();
         this.spawnTimer = 0f;
 
-        this.enemyWidth = enemyTexture.getWidth();
-        this.enemyHeight = enemyTexture.getHeight();
+        for (EnemyEnum type : EnemyEnum.values()) {
+            if (type.getSpawnRate() > 0) {
+                spawnable.add(type);
+            }
+        }
     }
 
     public void update() {
         float deltaTime = Gdx.graphics.getDeltaTime();
+        Player player = App.getGame().getPlayer();
 
         spawnTimer += deltaTime;
         if (spawnTimer >= spawnInterval && enemies.size() < maxEnemies) {
@@ -52,11 +60,18 @@ public class EnemyController {
                 continue;
             }
 
-            moveEnemy(enemy, deltaTime);
+            enemy.update(deltaTime, player);
+
+            if (enemy.canAttack(player)) {
+                enemy.startAttacking();
+            } else {
+                enemy.stopAttacking();
+                moveEnemy(enemy, deltaTime);
+            }
             Camera camera = worldController.getCamera();
             float screenX = camera.getScreenX(enemy.getPosX());
             float screenY = camera.getScreenY(enemy.getPosY());
-
+            Texture enemyTexture = enemy.getType().getTexture();
             Main.getBatch().draw(enemyTexture, screenX, screenY);
         }
     }
@@ -69,9 +84,13 @@ public class EnemyController {
             float angle = MathUtils.random(0f, MathUtils.PI2);
             float spawnX = player.getPosX() + MathUtils.cos(angle) * spawnRadius;
             float spawnY = player.getPosY() + MathUtils.sin(angle) * spawnRadius;
+            type = getRandomEnemyType();
+            enemyWidth = type.getTexture().getWidth();
+            enemyHeight = type.getTexture().getHeight();
 
             if (worldController.isPositionValid(spawnX, spawnY, enemyWidth, enemyHeight)) {
-                Enemy newEnemy = new Enemy(spawnX, spawnY);
+                Enemy newEnemy = new Enemy(spawnX, spawnY, type);
+                newEnemy.updateRectangle();
                 enemies.add(newEnemy);
                 return;
             } else {
@@ -84,7 +103,8 @@ public class EnemyController {
                 );
 
                 if (distToPlayer > 100f) {
-                    Enemy newEnemy = new Enemy(clampedX, clampedY);
+                    Enemy newEnemy = new Enemy(clampedX, clampedY, type);
+                    newEnemy.updateRectangle();
                     enemies.add(newEnemy);
                     return;
                 }
@@ -94,9 +114,25 @@ public class EnemyController {
         float[] bounds = worldController.getWorldBounds(enemyWidth, enemyHeight);
         float fallbackX = bounds[0] + MathUtils.random() * (bounds[1] - bounds[0]);
         float fallbackY = bounds[2] + MathUtils.random() * (bounds[3] - bounds[2]);
+        EnemyEnum type = getRandomEnemyType();
 
-        Enemy newEnemy = new Enemy(fallbackX, fallbackY);
+        Enemy newEnemy = new Enemy(fallbackX, fallbackY, type);
+        newEnemy.updateRectangle();
         enemies.add(newEnemy);
+    }
+
+    private EnemyEnum getRandomEnemyType() {
+        if (spawnable.size == 0) return EnemyEnum.TENTACLE_MONSTER;
+
+        // Create weighted list based on spawn rates
+        Array<EnemyEnum> weightedList = new Array<>();
+        for (EnemyEnum type : spawnable) {
+            for (int i = 0; i < type.getSpawnRate(); i++) {
+                weightedList.add(type);
+            }
+        }
+
+        return weightedList.random();
     }
 
     private void moveEnemy(Enemy enemy, float deltaTime) {
@@ -120,10 +156,11 @@ public class EnemyController {
                 enemy.setPosX(worldController.clampX(newX, enemyWidth));
                 enemy.setPosY(worldController.clampY(newY, enemyHeight));
             }
+            enemy.updateRectangle();
         }
     }
 
-    public List<Enemy> getEnemies() {
+    public static List<Enemy> getEnemies() {
         return enemies;
     }
 

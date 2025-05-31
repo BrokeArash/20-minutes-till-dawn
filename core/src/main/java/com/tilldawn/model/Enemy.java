@@ -1,8 +1,7 @@
 package com.tilldawn.model;
 
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Rectangle;
+import com.tilldawn.model.enums.EnemyEnum;
 
 public class Enemy {
     private float posX;
@@ -10,13 +9,64 @@ public class Enemy {
     private float speed;
     private float health;
     private boolean alive;
+    private Rectangle rectangle;
+    private EnemyEnum type;
+    private float attackCooldown;
+    private float attackTimer;
+    private boolean isAttacking;
 
-    public Enemy(float x, float y) {
+    public Enemy(float x, float y, EnemyEnum type) {
+        this.type = type;
         this.posX = x;
         this.posY = y;
         this.speed = 50f;
-        this.health = 100f;
+        this.health = type.getHp();
         this.alive = true;
+        rectangle = new Rectangle(x, y, EnemyEnum.ELDER.getTexture().getWidth(),
+            EnemyEnum.ELDER.getTexture().getHeight());
+        this.attackCooldown = 2.0f; // Seconds between attacks
+        this.attackTimer = 0;
+        this.isAttacking = false;
+    }
+
+    public void update(float deltaTime, Player player) {
+        // Update attack timer
+        if (isAttacking) {
+            attackTimer += deltaTime;
+            if (attackTimer >= attackCooldown) {
+                attack(player);
+                attackTimer = 0;
+            }
+        }
+
+        // Update rectangle position
+        updateRectangle();
+    }
+
+    public boolean canAttack(Player player) {
+        float distance = (float) Math.sqrt(
+            Math.pow(player.getPosX() - posX, 2) +
+                Math.pow(player.getPosY() - posY, 2)
+        );
+        return distance <= type.getAttackRange();
+    }
+
+    public void startAttacking() {
+        this.isAttacking = true;
+    }
+
+    public void stopAttacking() {
+        this.isAttacking = false;
+    }
+
+    private void attack(Player player) {
+        player.takeDamage(type.getAttackDamage());
+        GameAssetsManager.getGameAssetsManager().getMonsterAttack().play();
+        // Play attack sound
+    }
+
+    public EnemyEnum getType() {
+        return type;
     }
 
     public float getPosX() { return posX; }
@@ -39,5 +89,13 @@ public class Enemy {
         if (this.health <= 0) {
             this.alive = false;
         }
+    }
+
+    public Rectangle getRectangle() {
+        return rectangle;
+    }
+
+    public void updateRectangle() {
+        rectangle.setPosition(posX, posY);
     }
 }

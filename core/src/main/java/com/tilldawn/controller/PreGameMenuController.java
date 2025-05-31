@@ -66,6 +66,7 @@ public class PreGameMenuController {
         for (Mode mode1 : Mode.values()) {
             if (mode1.getName().equalsIgnoreCase(mode)) {
                 App.getGame().setMode(mode1);
+                App.getGame().startGame();
                 break;
             }
         }

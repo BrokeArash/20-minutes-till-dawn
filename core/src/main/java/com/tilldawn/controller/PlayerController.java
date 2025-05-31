@@ -6,7 +6,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.tilldawn.Main;
 import com.tilldawn.model.App;
+import com.tilldawn.model.GameAssetsManager;
 import com.tilldawn.model.Player;
+import com.tilldawn.view.MainMenu;
 
 public class PlayerController {
     private Player player;
@@ -28,6 +30,11 @@ public class PlayerController {
 
     public void update(){
         player.getPlayerSprite().draw(Main.getBatch());
+
+        if (player.getPlayerHealth() <= 0) {
+            Main.getMain().changeScreen(new MainMenu(new MainMenuController(),
+                GameAssetsManager.getGameAssetsManager().getSkin())); //TODO: change
+        }
 
         if(player.isPlayerIdle()){
             idleAnimation();

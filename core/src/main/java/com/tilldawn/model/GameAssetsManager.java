@@ -7,6 +7,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.tilldawn.model.enums.EnemyEnum;
 
 public class GameAssetsManager {
     private static GameAssetsManager gameAssetsManager;
@@ -21,8 +22,9 @@ public class GameAssetsManager {
     private final String bullet;
     private Texture backgroundTexture;
     private Sound reloadSound;
-
-    private Texture enemyTexture = new Texture("Images_grouped_1/Sprite/EyeMonster/EyeMonster_0.png");
+    private Sound gunshot;
+    private Sound monsterAttack;
+    private Sound monsterDamage;
 
     // Private constructor for singleton
     private GameAssetsManager() {
@@ -48,6 +50,9 @@ public class GameAssetsManager {
         this.backgroundTexture = new Texture("background.png");
 
         reloadSound = Gdx.audio.newSound(Gdx.files.internal("SFX/AudioClip/Weapon_Shotgun_Reload.wav"));
+        gunshot = Gdx.audio.newSound(Gdx.files.internal("SFX/AudioClip/single_shot.wav"));
+        monsterAttack = Gdx.audio.newSound(Gdx.files.internal("SFX/AudioClip/Monster_2_Attack_Quick_01_WITH_ECHO.wav"));
+        monsterDamage = Gdx.audio.newSound(Gdx.files.internal("SFX/AudioClip/Monster_2_RecieveAttack_HighIntensity_01.wav"));
 
     }
 
@@ -123,10 +128,6 @@ public class GameAssetsManager {
         return bullet;
     }
 
-    public Texture getEnemyTexture() {
-        return enemyTexture;
-    }
-
     public Texture getBackgroundTexture() {
         return backgroundTexture;
     }
@@ -134,4 +135,26 @@ public class GameAssetsManager {
     public Sound getReloadSound() {
         return reloadSound;
     }
+
+    public Sound getGunshot() {
+        return gunshot;
+    }
+
+    public Sound getMonsterAttack() {
+        return monsterAttack;
+    }
+
+    public Sound getMonsterDamage() {
+        return monsterDamage;
+    }
+
+    public void dispose() {
+        // ... existing disposal ...
+
+        // Dispose enemy textures
+        for (EnemyEnum type : EnemyEnum.values()) {
+            type.getTexture().dispose();
+        }
+    }
+
 }

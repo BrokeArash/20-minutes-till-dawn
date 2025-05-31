@@ -8,7 +8,10 @@ import com.tilldawn.Main;
 import com.tilldawn.model.App;
 import com.tilldawn.model.GameAssetsManager;
 import com.tilldawn.model.Player;
+import com.tilldawn.view.GameEndMenu;
 import com.tilldawn.view.MainMenu;
+
+import java.awt.*;
 
 public class PlayerController {
     private Player player;
@@ -32,8 +35,10 @@ public class PlayerController {
         player.getPlayerSprite().draw(Main.getBatch());
 
         if (player.getPlayerHealth() <= 0) {
-            Main.getMain().changeScreen(new MainMenu(new MainMenuController(),
-                GameAssetsManager.getGameAssetsManager().getSkin())); //TODO: change
+            String status = "you lost";
+            Main.getMain().changeScreen(new GameEndMenu(status, App.getGame().getScore(),
+                App.getGame().getKill(), App.getGame().getTime(),
+                GameAssetsManager.getGameAssetsManager().getSkin()));
         }
 
         if(player.isPlayerIdle()){

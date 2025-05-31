@@ -56,6 +56,7 @@ public class EnemyController {
         while (iterator.hasNext()) {
             Enemy enemy = iterator.next();
             if (!enemy.isAlive()) {
+                App.getGame().addKill();
                 iterator.remove();
                 continue;
             }

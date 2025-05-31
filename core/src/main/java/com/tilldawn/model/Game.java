@@ -9,6 +9,9 @@ public class Game {
     private Player player;
     private float timeRemaining;
     private boolean timerActive;
+    private String status;
+    private int kill;
+    private int time;
 
     public void startGame() {
         timeRemaining = mode.getTime() * 60f;
@@ -63,4 +66,29 @@ public class Game {
     public boolean isTimerActive() {
         return timerActive;
     }
+
+    public int getTime() {
+        return (mode.getTime() * 60) - (int) timeRemaining;
+    }
+
+    public int getKill() {
+        return kill;
+    }
+
+    public void addKill() {
+        this.kill ++;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public int getScore() {
+        return getKill() * getTime();
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
 }

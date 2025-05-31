@@ -16,6 +16,7 @@ import com.tilldawn.controller.PreGameMenuController;
 import com.tilldawn.model.App;
 import com.tilldawn.model.Game;
 import com.tilldawn.model.GameAssetsManager;
+import sun.jvm.hotspot.debugger.cdbg.basic.LazyBlockSym;
 
 import javax.sound.midi.MidiUnavailableException;
 
@@ -23,6 +24,7 @@ public class GameEndMenu implements Screen {
     private Stage stage;
     private TextButton play;
     private TextButton end;
+    private Label name;
     private Label gameStatus;
     private Label score;
     private Label kill;
@@ -34,6 +36,7 @@ public class GameEndMenu implements Screen {
         this.stage = new Stage(new ScreenViewport());
         this.play = new TextButton("play again", skin);
         this.end = new TextButton("end", skin);
+        this.name = new Label(App.getCurrentUser().getUsername(), skin);
         this.gameStatus = new Label(status, skin);
         this.score = new Label(String.valueOf(score), skin);
         this.kill = new Label(String.valueOf(kill), skin);
@@ -45,12 +48,13 @@ public class GameEndMenu implements Screen {
     public void show() {
         Gdx.input.setInputProcessor(stage);
         table.setFillParent(true);
-        table.add(gameStatus).colspan(2).padBottom(30).padLeft(500).row();
-        table.add(score).colspan(2).padBottom(30).padLeft(500).row();
-        table.add(kill).colspan(2).padBottom(30).padLeft(500).row();
-        table.add(time).colspan(2).padBottom(30).padLeft(500).row();
-        table.add(play).colspan(2).padBottom(30).padLeft(500).row();
-        table.add(end).colspan(2).padBottom(30).padLeft(500).row();
+        table.add(gameStatus).colspan(2).padBottom(30).row();
+        table.add(name).colspan(2).padBottom(30).row();
+        table.add(score).colspan(2).padBottom(30).row();
+        table.add(kill).colspan(2).padBottom(30).row();
+        table.add(time).colspan(2).padBottom(30).row();
+        table.add(play).colspan(2).padBottom(30).row();
+        table.add(end).colspan(2).padBottom(30).row();
         stage.addActor(table);
     }
 
@@ -72,7 +76,7 @@ public class GameEndMenu implements Screen {
         }
 
         if (getEnd().isPressed()) {
-            if (!App.getCurrentUser().getUsername().equalsIgnoreCase("guestpass")) {
+            if (App.getCurrentUser().getUsername().equalsIgnoreCase("guestpass")) {
                 Main.getMain().changeScreen(new LoginMenu(new LoginMenuController(), GameAssetsManager.getGameAssetsManager().getSkin()));
             } else {
                 Main.getMain().changeScreen(new MainMenu(new MainMenuController(), GameAssetsManager.getGameAssetsManager().getSkin()));

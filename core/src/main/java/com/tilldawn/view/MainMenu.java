@@ -52,13 +52,13 @@ public class MainMenu implements Screen {
         table.right();
         table.add(point).colspan(2).padLeft(350).row();
         table.center();
-        table.add(continueButton).colspan(2).padBottom(30).padLeft(500).row();
-        table.add(preGameButton).colspan(2).padBottom(30).padLeft(500).row();
-        table.add(profileButton).colspan(2).padBottom(30).padLeft(500).row();
-        table.add(settingButton).colspan(2).padBottom(30).padLeft(500).row();
-        table.add(talentButton).colspan(2).padBottom(30).padLeft(500).row();
-        table.add(scoreBoardButton).colspan(2).padBottom(30).padLeft(500).row();
-        table.add(exitButton).colspan(2).padBottom(30).padLeft(500).row();
+        table.add(continueButton).colspan(2).padBottom(30).padLeft(300).row();
+        table.add(preGameButton).colspan(2).padBottom(30).padLeft(300).row();
+        table.add(profileButton).colspan(2).padBottom(30).padLeft(300).row();
+        table.add(settingButton).colspan(2).padBottom(30).padLeft(300).row();
+        table.add(talentButton).colspan(2).padBottom(30).padLeft(300).row();
+        table.add(scoreBoardButton).colspan(2).padBottom(30).padLeft(300).row();
+        table.add(exitButton).colspan(2).padBottom(30).padLeft(300).row();
         stage.addActor(table);
 
     }

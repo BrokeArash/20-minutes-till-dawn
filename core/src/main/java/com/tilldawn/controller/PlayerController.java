@@ -44,8 +44,8 @@ public class PlayerController {
 
         boolean moved = false;
 
-        if (Gdx.input.isKeyPressed(Input.Keys.R)) {
-            player.getWeapon().setCurrentAmmoMax();
+        if (Gdx.input.isKeyPressed(Input.Keys.R) && !player.getWeapon().isReloading()) {
+            player.getWeapon().startReload();
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.W)){

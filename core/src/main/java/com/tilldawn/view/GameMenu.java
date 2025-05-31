@@ -1,6 +1,7 @@
 package com.tilldawn.view;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -11,12 +12,14 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.tilldawn.Main;
 import com.tilldawn.controller.GameMenuController;
 import com.tilldawn.model.App;
+import com.tilldawn.model.Player;
 
 public class GameMenu implements Screen, InputProcessor {
 
     private Stage stage;
     private GameMenuController controller;
     private TextField bulletNum;
+    private Player player = App.getGame().getPlayer();
 
     public GameMenu(GameMenuController controller, Skin skin) {
         this.controller = controller;
@@ -45,6 +48,13 @@ public class GameMenu implements Screen, InputProcessor {
     public void render(float delta) {
         Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
         Gdx.gl.glClear(Gdx.gl.GL_COLOR_BUFFER_BIT);
+
+        player.getWeapon().update(delta); // Handles reload timing
+
+        // 2. Handle input
+        if (Gdx.input.isKeyPressed(Input.Keys.R) && !player.getWeapon().isReloading()) {
+            player.getWeapon().startReload();
+        }
 
         Main.getBatch().begin();
         controller.updateGame();

@@ -3,6 +3,7 @@ package com.tilldawn.model;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -19,6 +20,7 @@ public class GameAssetsManager {
     private Preferences preferences;
     private final String bullet;
     private Texture backgroundTexture;
+    private Sound reloadSound;
 
     private Texture enemyTexture = new Texture("Images_grouped_1/Sprite/EyeMonster/EyeMonster_0.png");
 
@@ -44,6 +46,8 @@ public class GameAssetsManager {
 
         bullet = "Images_grouped_1/Sprite/Icon/Icon_Bullet_Storm.png";
         this.backgroundTexture = new Texture("background.png");
+
+        reloadSound = Gdx.audio.newSound(Gdx.files.internal("SFX/AudioClip/Weapon_Shotgun_Reload.wav"));
 
     }
 
@@ -125,5 +129,9 @@ public class GameAssetsManager {
 
     public Texture getBackgroundTexture() {
         return backgroundTexture;
+    }
+
+    public Sound getReloadSound() {
+        return reloadSound;
     }
 }

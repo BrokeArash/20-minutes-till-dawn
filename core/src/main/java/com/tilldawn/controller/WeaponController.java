@@ -37,7 +37,7 @@ public class WeaponController {
     }
 
     public void handleWeaponShoot(int x, int y){
-        if (weapon.getCurrentAmmo() < 1) {
+        if (weapon.getCurrentAmmo() < 1 || weapon.isReloading()) {
             return;
         }
         bullets.add(new Bullet(x, y));

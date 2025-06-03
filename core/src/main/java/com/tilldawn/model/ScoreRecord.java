@@ -9,7 +9,7 @@ public class ScoreRecord implements Comparable<ScoreRecord> {
     private final int score;
     private final int kill;
     private final int time;
-    private final long timestamp;
+    private long timestamp;
     private final Mode gameMode;
 
     public ScoreRecord(User user, int score, int kill, int time, Mode gameMode) {
@@ -68,5 +68,9 @@ public class ScoreRecord implements Comparable<ScoreRecord> {
 
     public Mode getGameMode() {
         return gameMode;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
     }
 }

@@ -1,68 +1,20 @@
-package com.tilldawn.model;;
+package com.tilldawn.model;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.tilldawn.model.enums.Mode;
 import com.tilldawn.view.LoginMenu;
 
-public class UserDatabase {
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
-    private Array<User> users;
-    private final Json json;
+public class UserDatabase {
+    private DatabaseManager dbManager;
     private LoginMenu view;
 
     public UserDatabase() {
-        this.json = new Json();
-        json.setSerializer(ScoreRecord.class, new Json.Serializer<ScoreRecord>() {
-            @Override
-            public void write(Json json, ScoreRecord rec, Class knownType) {
-                json.writeObjectStart();
-                // Instead of writing rec.getUser(), just write the username:
-                json.writeValue("username", rec.getUser().getUsername());
-                // Write only the primitives you care about:
-                json.writeValue("score",    rec.getScore());
-                json.writeValue("kill",     rec.getKill());
-                json.writeValue("time",     rec.getTime());
-                json.writeValue("gameMode", rec.getGameMode().toString());
-                json.writeValue("timestamp", rec.getTimestamp());
-                json.writeObjectEnd();
-            }
-
-            @Override
-            public ScoreRecord read(Json json, JsonValue jsonData, Class type) {
-                // Reconstruct from primitives:
-                String username   = jsonData.getString("username");
-                int    score      = jsonData.getInt("score");
-                int    kill       = jsonData.getInt("kill");
-                int    time       = jsonData.getInt("time");
-                String modeString = jsonData.getString("gameMode");
-                Mode   gameMode   = Mode.valueOf(modeString);
-                long   timestamp  = jsonData.getLong("timestamp");
-
-                // Build a new ScoreRecord(user, score, kill, time, gameMode).
-                // But first, look up the real User object so we keep the same instance:
-                User user = findUserInDatabase(username);
-                ScoreRecord rec = new ScoreRecord(user, score, kill, time, gameMode);
-                // If you want to preserve the old timestamp, add a setter or special constructor:
-                //    rec.setTimestamp(timestamp);
-                return rec;
-            }
-        });
-
-        this.users = new Array<>();
-        loadUsers();
-    }
-
-    private User findUserInDatabase(String username) {
-        for (User user : users) {
-            if (user.getUsername().equalsIgnoreCase(username)) {
-                return user;
-            }
-        }
-        return null;
+        this.dbManager = DatabaseManager.getInstance();
     }
 
     public void setView(LoginMenu loginMenu) {
@@ -81,11 +33,11 @@ public class UserDatabase {
         // Create the guest user with default credentials
         User guestUser = new User(guestName, "guestpass", "guest");
 
-        // Add to database and save
-        users.add(guestUser);
-        saveUsers();
-
-        return guestUser;
+        // Add to database
+        if (insertUser(guestUser)) {
+            return guestUser;
+        }
+        return null;
     }
 
     public User loginUser(String username, String password) {
@@ -99,43 +51,41 @@ public class UserDatabase {
             return null;
         }
 
-        for (User user : users) {
-            if (user.getUsername().equalsIgnoreCase(username)) {
-                if (user.getPassword().equals(password)) {
+        String sql = "SELECT id, username, password, security_answer FROM users WHERE LOWER(username) = LOWER(?)";
+
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, username);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                String storedPassword = rs.getString("password");
+                if (storedPassword.equals(password)) {
                     Gdx.app.log("UserDatabase", "Login successful for: " + username);
-                    return user;
+                    return new User(
+                        rs.getInt("id"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getString("security_answer")
+                    );
                 } else {
-                    view.setErrorPass("Login failed - incorrect password for: " + username);
+                    if (view != null) {
+                        view.setErrorPass("Login failed - incorrect password for: " + username);
+                    }
                     Gdx.app.log("UserDatabase", "Login failed - incorrect password for: " + username);
                     return null;
                 }
-            }
-        }
-        view.setErrorPass("Login failed - user not found: " + username);
-        Gdx.app.log("UserDatabase", "Login failed - user not found: " + username);
-        return null;
-    }
-
-    private void loadUsers() {
-        try {
-            if (Gdx.files.local("users.json").exists()) {
-                Array<User> loadedUsers = json.fromJson(Array.class, User.class, Gdx.files.local("users.json"));
-                if (loadedUsers != null) {
-                    users = loadedUsers;
+            } else {
+                if (view != null) {
+                    view.setErrorPass("Login failed - user not found: " + username);
                 }
+                Gdx.app.log("UserDatabase", "Login failed - user not found: " + username);
+                return null;
             }
-        } catch (Exception e) {
-            Gdx.app.error("UserDatabase", "Error loading users", e);
-            users = new Array<>();
-        }
-    }
-
-    public void saveUsers() {
-        try {
-            json.toJson(users, Array.class, User.class, Gdx.files.local("users.json"));
-            Gdx.app.log("UserDatabase", "Saved " + users.size + " users to JSON");
-        } catch (Exception e) {
-            Gdx.app.error("UserDatabase", "Error saving users", e);
+        } catch (SQLException e) {
+            Gdx.app.error("UserDatabase", "Error during login", e);
+            return null;
         }
     }
 
@@ -143,16 +93,51 @@ public class UserDatabase {
         if (isUsernameTaken(username)) {
             return false;
         }
-        users.add(new User(username, password, securityAnswer));
-        saveUsers();
-        return true;
+
+        User newUser = new User(username, password, securityAnswer);
+        return insertUser(newUser);
+    }
+
+    private boolean insertUser(User user) {
+        String sql = "INSERT INTO users (username, password, security_answer) VALUES (?, ?, ?)";
+
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            pstmt.setString(1, user.getUsername());
+            pstmt.setString(2, user.getPassword());
+            pstmt.setString(3, user.getSec());
+
+            int affectedRows = pstmt.executeUpdate();
+            if (affectedRows > 0) {
+                // Get the generated ID and set it on the user
+                ResultSet generatedKeys = pstmt.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    user.setId(generatedKeys.getInt(1));
+                }
+                Gdx.app.log("UserDatabase", "User registered: " + user.getUsername());
+                return true;
+            }
+        } catch (SQLException e) {
+            Gdx.app.error("UserDatabase", "Error registering user", e);
+        }
+        return false;
     }
 
     public boolean isUsernameTaken(String username) {
-        for (User user : users) {
-            if (user.getUsername().equalsIgnoreCase(username)) {
-                return true;
+        String sql = "SELECT COUNT(*) FROM users WHERE LOWER(username) = LOWER(?)";
+
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, username);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
             }
+        } catch (SQLException e) {
+            Gdx.app.error("UserDatabase", "Error checking username", e);
         }
         return false;
     }
@@ -163,19 +148,29 @@ public class UserDatabase {
             return false;
         }
 
-        for (User user : users) {
-            if (user.getUsername().equalsIgnoreCase(username)) {
-                // Compare the provided answer with the stored security answer
-                boolean isCorrect = user.getSec().equalsIgnoreCase(answer.trim());
+        String sql = "SELECT security_answer FROM users WHERE LOWER(username) = LOWER(?)";
+
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, username);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                String storedAnswer = rs.getString("security_answer");
+                boolean isCorrect = storedAnswer.equalsIgnoreCase(answer.trim());
                 if (!isCorrect) {
                     Gdx.app.log("UserDatabase", "Incorrect security answer for: " + username);
                 }
                 return isCorrect;
+            } else {
+                Gdx.app.log("UserDatabase", "User not found: " + username);
+                return false;
             }
+        } catch (SQLException e) {
+            Gdx.app.error("UserDatabase", "Error verifying security answer", e);
+            return false;
         }
-
-        Gdx.app.log("UserDatabase", "User not found: " + username);
-        return false;
     }
 
     public boolean updatePassword(String username, String newPassword) {
@@ -189,18 +184,26 @@ public class UserDatabase {
             return false;
         }
 
-        for (User user : users) {
-            if (user.getUsername().equalsIgnoreCase(username)) {
-                // Update the password
-                user.setPassword(newPassword);
-                saveUsers(); // Persist the change
+        String sql = "UPDATE users SET password = ?, updated_at = CURRENT_TIMESTAMP WHERE LOWER(username) = LOWER(?)";
+
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, newPassword);
+            pstmt.setString(2, username);
+
+            int affectedRows = pstmt.executeUpdate();
+            if (affectedRows > 0) {
                 Gdx.app.log("UserDatabase", "Password updated for: " + username);
                 return true;
+            } else {
+                Gdx.app.log("UserDatabase", "User not found for password update: " + username);
+                return false;
             }
+        } catch (SQLException e) {
+            Gdx.app.error("UserDatabase", "Error updating password", e);
+            return false;
         }
-
-        Gdx.app.log("UserDatabase", "User not found for password update: " + username);
-        return false;
     }
 
     public boolean updateUsername(String oldUsername, String newUsername) {
@@ -220,18 +223,26 @@ public class UserDatabase {
             return false;
         }
 
-        for (User user : users) {
-            if (user.getUsername().equalsIgnoreCase(oldUsername)) {
-                // Update the username
-                user.setUsername(newUsername);
-                saveUsers(); // Persist the change
+        String sql = "UPDATE users SET username = ?, updated_at = CURRENT_TIMESTAMP WHERE LOWER(username) = LOWER(?)";
+
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, newUsername);
+            pstmt.setString(2, oldUsername);
+
+            int affectedRows = pstmt.executeUpdate();
+            if (affectedRows > 0) {
                 Gdx.app.log("UserDatabase", "Username updated from " + oldUsername + " to " + newUsername);
                 return true;
+            } else {
+                Gdx.app.log("UserDatabase", "User not found for username update: " + oldUsername);
+                return false;
             }
+        } catch (SQLException e) {
+            Gdx.app.error("UserDatabase", "Error updating username", e);
+            return false;
         }
-
-        Gdx.app.log("UserDatabase", "User not found for username update: " + oldUsername);
-        return false;
     }
 
     public boolean deleteUser(String username, String password) {
@@ -240,31 +251,204 @@ public class UserDatabase {
             return false;
         }
 
-        for (int i = 0; i < users.size; i++) {
-            User user = users.get(i);
-            if (user.getUsername().equalsIgnoreCase(username) &&
-                user.getPassword().equals(password)) {
-                users.removeIndex(i);
-                saveUsers();
+        // First verify the password
+        if (!verifyPassword(username, password)) {
+            Gdx.app.log("UserDatabase", "User not found or password incorrect: " + username);
+            return false;
+        }
+
+        String sql = "DELETE FROM users WHERE LOWER(username) = LOWER(?) AND password = ?";
+
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, username);
+            pstmt.setString(2, password);
+
+            int affectedRows = pstmt.executeUpdate();
+            if (affectedRows > 0) {
                 Gdx.app.log("UserDatabase", "Deleted user: " + username);
                 return true;
             }
+        } catch (SQLException e) {
+            Gdx.app.error("UserDatabase", "Error deleting user", e);
         }
-
-        Gdx.app.log("UserDatabase", "User not found or password incorrect: " + username);
         return false;
     }
 
     public Array<User> getUsers() {
+        Array<User> users = new Array<>();
+        String sql = "SELECT id, username, password, security_answer FROM users ORDER BY username";
+
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            while (rs.next()) {
+                User user = new User(
+                    rs.getInt("id"),
+                    rs.getString("username"),
+                    rs.getString("password"),
+                    rs.getString("security_answer")
+                );
+                users.add(user);
+            }
+        } catch (SQLException e) {
+            Gdx.app.error("UserDatabase", "Error retrieving users", e);
+        }
+
         return users;
     }
 
     public boolean verifyPassword(String username, String currentPass) {
-        for (User user : users) {
-            if (user.getUsername().equalsIgnoreCase(username)) {
-                if (user.getPassword().equals(currentPass)) return true;
+        String sql = "SELECT password FROM users WHERE LOWER(username) = LOWER(?)";
+
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, username);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getString("password").equals(currentPass);
             }
+        } catch (SQLException e) {
+            Gdx.app.error("UserDatabase", "Error verifying password", e);
         }
         return false;
+    }
+
+    public User findUserInDatabase(String username) {
+        String sql = "SELECT id, username, password, security_answer FROM users WHERE LOWER(username) = LOWER(?)";
+
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, username);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return new User(
+                    rs.getInt("id"),
+                    rs.getString("username"),
+                    rs.getString("password"),
+                    rs.getString("security_answer")
+                );
+            }
+        } catch (SQLException e) {
+            Gdx.app.error("UserDatabase", "Error finding user", e);
+        }
+        return null;
+    }
+
+    // Score-related methods that would replace the JSON serialization logic
+    public boolean saveScoreRecord(ScoreRecord record) {
+        String sql = "INSERT INTO score_records (user_id, score, kills, time, game_mode, timestamp) VALUES (?, ?, ?, ?, ?, ?)";
+
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, record.getUser().getId());
+            pstmt.setInt(2, record.getScore());
+            pstmt.setInt(3, record.getKill());
+            pstmt.setInt(4, record.getTime());
+            pstmt.setString(5, record.getGameMode().toString());
+            pstmt.setLong(6, record.getTimestamp());
+
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            Gdx.app.error("UserDatabase", "Error saving score record", e);
+            return false;
+        }
+    }
+
+    public List<ScoreRecord> getScoreRecords(User user) {
+        List<ScoreRecord> records = new ArrayList<>();
+        String sql = "SELECT score, kills, time, game_mode, timestamp FROM score_records WHERE user_id = ? ORDER BY timestamp DESC";
+
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, user.getId());
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                ScoreRecord record = new ScoreRecord(
+                    user,
+                    rs.getInt("score"),
+                    rs.getInt("kills"),
+                    rs.getInt("time"),
+                    Mode.valueOf(rs.getString("game_mode"))
+                );
+                // Set the timestamp from database
+                record.setTimestamp(rs.getLong("timestamp"));
+                records.add(record);
+            }
+        } catch (SQLException e) {
+            Gdx.app.error("UserDatabase", "Error retrieving score records", e);
+        }
+
+        return records;
+    }
+
+    // Also add this method to get ALL score records from ALL users:
+    public List<ScoreRecord> getAllScoreRecords() {
+        List<ScoreRecord> records = new ArrayList<>();
+        String sql = "SELECT sr.score, sr.kills, sr.time, sr.game_mode, sr.timestamp, " +
+            "u.id as user_id, u.username, u.password, u.security_answer " +
+            "FROM score_records sr " +
+            "JOIN users u ON sr.user_id = u.id " +
+            "ORDER BY sr.timestamp DESC";
+
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            while (rs.next()) {
+                // Create user object
+                User user = new User(
+                    rs.getInt("user_id"),
+                    rs.getString("username"),
+                    rs.getString("password"),
+                    rs.getString("security_answer")
+                );
+
+                // Create score record
+                ScoreRecord record = new ScoreRecord(
+                    user,
+                    rs.getInt("score"),
+                    rs.getInt("kills"),
+                    rs.getInt("time"),
+                    Mode.valueOf(rs.getString("game_mode"))
+                );
+
+                // Set the timestamp from database
+                record.setTimestamp(rs.getLong("timestamp"));
+                records.add(record);
+            }
+        } catch (SQLException e) {
+            Gdx.app.error("UserDatabase", "Error retrieving all score records", e);
+        }
+
+        return records;
+    }
+
+    public int getMaxScore(User user) {
+        String sql = "SELECT MAX(score) as max_score FROM score_records WHERE user_id = ?";
+
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, user.getId());
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("max_score");
+            }
+        } catch (SQLException e) {
+            Gdx.app.error("UserDatabase", "Error retrieving max score", e);
+        }
+
+        return 0; // Return 0 if no scores found or error occurred
     }
 }

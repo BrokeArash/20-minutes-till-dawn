@@ -111,8 +111,10 @@ public class GameMenu implements Screen, InputProcessor {
     private void handleGameOver() {
         // Show game over screen
         App.getGame().setStatus("you won");
-        App.getScoreManager().addScore(App.getCurrentUser(), App.getGame().getScore(),
-            App.getGame().getKill(), App.getGame().getTime(), App.getGame().getMode());
+        User currentUser = App.getCurrentUser();
+        ScoreRecord record = new ScoreRecord(currentUser, App.getGame().getScore(), App.getGame().getKill(),
+            App.getGame().getTime(), App.getGame().getMode()); // or whatever mode
+        App.getUserDatabase().saveScoreRecord(record);
         Main.getMain().changeScreen(new GameEndMenu(App.getGame().getStatus(),App.getGame().getScore(),
             App.getGame().getKill(), App.getGame().getTime(), GameAssetsManager.getGameAssetsManager().getSkin()));
         // You might want to:

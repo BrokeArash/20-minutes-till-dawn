@@ -5,9 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.tilldawn.Main;
-import com.tilldawn.model.App;
-import com.tilldawn.model.GameAssetsManager;
-import com.tilldawn.model.Player;
+import com.tilldawn.model.*;
 import com.tilldawn.view.GameEndMenu;
 import com.tilldawn.view.MainMenu;
 
@@ -36,8 +34,10 @@ public class PlayerController {
 
         if (player.getPlayerHealth() <= 0) {
             String status = "you lost";
-            App.getScoreManager().addScore(App.getCurrentUser(), App.getGame().getScore(),
-                App.getGame().getKill(), App.getGame().getTime(), App.getGame().getMode());
+            User currentUser = App.getCurrentUser();
+            ScoreRecord record = new ScoreRecord(currentUser, App.getGame().getScore(), App.getGame().getKill(),
+                App.getGame().getTime(), App.getGame().getMode()); // or whatever mode
+            App.getUserDatabase().saveScoreRecord(record);
             Main.getMain().changeScreen(new GameEndMenu(status, App.getGame().getScore(),
                 App.getGame().getKill(), App.getGame().getTime(),
                 GameAssetsManager.getGameAssetsManager().getSkin()));

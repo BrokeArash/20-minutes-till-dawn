@@ -37,7 +37,7 @@ public class MainMenu implements Screen {
         this.continueButton = new TextButton("continue", skin);
         this.exitButton = new TextButton("exit", skin);
         this.username = new Label(App.getCurrentUser().getUsername(), skin, "title");
-        this.point = new Label(App.getCurrentUser().getPoint() + " points", skin, "title");
+        this.point = new Label(App.getCurrentUser().getMaxScore() + " points", skin, "title");
         this.table = new Table(skin);
         this.controller = mainMenuController;
         controller.setView(this);
@@ -92,7 +92,6 @@ public class MainMenu implements Screen {
 
     @Override
     public void dispose() {
-
     }
 
     public Stage getStage() {

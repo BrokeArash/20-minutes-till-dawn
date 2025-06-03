@@ -1,5 +1,11 @@
 package com.tilldawn.model;
 
+import com.tilldawn.model.enums.Mode;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class User {
 
     private String username;
@@ -8,7 +14,7 @@ public class User {
 
     private String sec;
 
-    private int point;
+    private final List<ScoreRecord> scoreRecords = new ArrayList<>();
 
     public User() {
     }
@@ -17,7 +23,16 @@ public class User {
         this.username = username;
         this.password = password;
         this.sec = sec;
-        this.point = 0;
+    }
+
+    public void addScoreRecord(ScoreRecord rec) {
+        scoreRecords.add(rec);
+        // (Optional) keep the user‐side list sorted as well:
+        Collections.sort(scoreRecords);
+    }
+
+    public List<ScoreRecord> getScoreRecords() {
+        return scoreRecords;
     }
 
     public String getUsername() {
@@ -44,11 +59,9 @@ public class User {
         this.sec = sec;
     }
 
-    public int getPoint() {
-        return point;
+    public int getMaxScore() {
+        if (App.getScoreManager().getUserTopScores(this, 1).isEmpty()) return 0;
+        return App.getScoreManager().getUserTopScores(this, 1).get(0).getScore();
     }
 
-    public void addPoint(int point) {
-        this.point += point;
-    }
 }

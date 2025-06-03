@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonValue;
+import com.tilldawn.model.enums.Mode;
 import com.tilldawn.view.LoginMenu;
 
 public class UserDatabase {
@@ -14,8 +16,53 @@ public class UserDatabase {
 
     public UserDatabase() {
         this.json = new Json();
+        json.setSerializer(ScoreRecord.class, new Json.Serializer<ScoreRecord>() {
+            @Override
+            public void write(Json json, ScoreRecord rec, Class knownType) {
+                json.writeObjectStart();
+                // Instead of writing rec.getUser(), just write the username:
+                json.writeValue("username", rec.getUser().getUsername());
+                // Write only the primitives you care about:
+                json.writeValue("score",    rec.getScore());
+                json.writeValue("kill",     rec.getKill());
+                json.writeValue("time",     rec.getTime());
+                json.writeValue("gameMode", rec.getGameMode().toString());
+                json.writeValue("timestamp", rec.getTimestamp());
+                json.writeObjectEnd();
+            }
+
+            @Override
+            public ScoreRecord read(Json json, JsonValue jsonData, Class type) {
+                // Reconstruct from primitives:
+                String username   = jsonData.getString("username");
+                int    score      = jsonData.getInt("score");
+                int    kill       = jsonData.getInt("kill");
+                int    time       = jsonData.getInt("time");
+                String modeString = jsonData.getString("gameMode");
+                Mode   gameMode   = Mode.valueOf(modeString);
+                long   timestamp  = jsonData.getLong("timestamp");
+
+                // Build a new ScoreRecord(user, score, kill, time, gameMode).
+                // But first, look up the real User object so we keep the same instance:
+                User user = findUserInDatabase(username);
+                ScoreRecord rec = new ScoreRecord(user, score, kill, time, gameMode);
+                // If you want to preserve the old timestamp, add a setter or special constructor:
+                //    rec.setTimestamp(timestamp);
+                return rec;
+            }
+        });
+
         this.users = new Array<>();
         loadUsers();
+    }
+
+    private User findUserInDatabase(String username) {
+        for (User user : users) {
+            if (user.getUsername().equalsIgnoreCase(username)) {
+                return user;
+            }
+        }
+        return null;
     }
 
     public void setView(LoginMenu loginMenu) {

@@ -36,6 +36,8 @@ public class PlayerController {
 
         if (player.getPlayerHealth() <= 0) {
             String status = "you lost";
+            App.getScoreManager().addScore(App.getCurrentUser(), App.getGame().getScore(),
+                App.getGame().getKill(), App.getGame().getTime(), App.getGame().getMode());
             Main.getMain().changeScreen(new GameEndMenu(status, App.getGame().getScore(),
                 App.getGame().getKill(), App.getGame().getTime(),
                 GameAssetsManager.getGameAssetsManager().getSkin()));

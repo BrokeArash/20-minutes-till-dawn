@@ -91,4 +91,11 @@ public class Game {
         this.status = status;
     }
 
+    public void setKill(int kill) {
+        this.kill = kill;
+    }
+
+    public void setTime(int time) {
+        this.time = time;
+    }
 }

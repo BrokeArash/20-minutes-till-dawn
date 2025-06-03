@@ -214,6 +214,7 @@ public class ForgetPassword implements Screen {
 
     @Override
     public void dispose() {
+
         stage.dispose();
     }
 }

@@ -174,6 +174,7 @@ public class ChangePasswordMenu implements Screen {
 
     @Override
     public void dispose() {
+
         stage.dispose();
     }
 }

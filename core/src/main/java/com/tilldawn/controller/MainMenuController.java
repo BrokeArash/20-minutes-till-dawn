@@ -66,7 +66,7 @@ public class MainMenuController {
         view.getScoreBoardButton().addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                //TODO
+                Main.getMain().changeScreen(new ScoreBoardMenu(new ScoreBoardMenuController(), GameAssetsManager.getGameAssetsManager().getSkin()));
             }
         });
 

@@ -169,6 +169,7 @@ public class ChangeUsernameMenu implements Screen {
 
     @Override
     public void dispose() {
+
         stage.dispose();
     }
 }

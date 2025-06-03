@@ -111,6 +111,8 @@ public class GameMenu implements Screen, InputProcessor {
     private void handleGameOver() {
         // Show game over screen
         App.getGame().setStatus("you won");
+        App.getScoreManager().addScore(App.getCurrentUser(), App.getGame().getScore(),
+            App.getGame().getKill(), App.getGame().getTime(), App.getGame().getMode());
         Main.getMain().changeScreen(new GameEndMenu(App.getGame().getStatus(),App.getGame().getScore(),
             App.getGame().getKill(), App.getGame().getTime(), GameAssetsManager.getGameAssetsManager().getSkin()));
         // You might want to:
@@ -140,6 +142,7 @@ public class GameMenu implements Screen, InputProcessor {
 
     @Override
     public void dispose() {
+
     }
 
     @Override

@@ -21,7 +21,7 @@ public class Main extends Game {
         main = this;
         batch = new SpriteBatch();
 
-        App.initialize();  //initialize database
+        App.initialize(); //initialize database
         setScreen(new SignupMenu(new SignupMenuController(), GameAssetsManager.getGameAssetsManager().getSkin()));
         GameAssetsManager.getGameAssetsManager().playMusic();
     }

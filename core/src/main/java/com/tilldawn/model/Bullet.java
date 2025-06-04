@@ -50,4 +50,7 @@ public class Bullet {
         rectangle.setPosition(sprite.getX(), sprite.getY());
     }
 
+    public void setDamage(int damage) {
+        this.damage = damage;
+    }
 }

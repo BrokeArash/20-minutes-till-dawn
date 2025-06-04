@@ -68,7 +68,7 @@ public class PauseMenu implements Screen {
         abilities.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                messageLabel.setText("No ability available.");
+                messageLabel.setText(App.getGame().getPlayer().getAbilitiesText());
             }
         });
 

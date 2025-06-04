@@ -30,6 +30,8 @@ public class PlayerController {
     }
 
     public void update(){
+        player.updateAbilities(Gdx.graphics.getDeltaTime());
+
         player.getPlayerSprite().draw(Main.getBatch());
 
         if (player.getPlayerHealth() <= 0) {

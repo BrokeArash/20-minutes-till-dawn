@@ -121,4 +121,23 @@ public class ProfileMenu implements Screen {
         }
     }
 
+    public Stage getStage() {
+        return stage;
+    }
+
+    public Image getAvatarPreview() {
+        return avatarPreview;
+    }
+
+    public SelectBox<String> getAvatarSelectBox() {
+        return avatarSelectBox;
+    }
+
+    public void setAvatarSelectBox(SelectBox<String> avatarSelectBox) {
+        this.avatarSelectBox = avatarSelectBox;
+    }
+
+    public void setAvatarPreview(Image avatarPreview) {
+        this.avatarPreview = avatarPreview;
+    }
 }

@@ -10,7 +10,7 @@ import com.tilldawn.model.enums.WeaponEnum;
 public class Weapon {
     private final Texture gunTexture;
     private Sprite gunSprite;
-    private final int maxAmmo;
+    private int maxAmmo;
     private WeaponEnum weapon;
     private int currentAmmo;
     private float reloadTime;
@@ -90,5 +90,9 @@ public class Weapon {
 
     public Sound getGunshot() {
         return gunshot;
+    }
+
+    public void setMaxAmmo(int maxAmmo) {
+        this.maxAmmo = maxAmmo;
     }
 }

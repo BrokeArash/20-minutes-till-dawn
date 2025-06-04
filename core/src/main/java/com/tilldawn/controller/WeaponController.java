@@ -1,6 +1,5 @@
 package com.tilldawn.controller;
 
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
@@ -8,23 +7,26 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.tilldawn.Main;
 import com.tilldawn.model.*;
-
+import com.tilldawn.model.Player;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 
 public class WeaponController {
     private Weapon weapon;
+    private Player player;
     private ArrayList<Bullet> bullets = new ArrayList<>();
     private WorldController worldController;
 
-    public WeaponController(Weapon weapon, WorldController worldController){
+    public WeaponController(Weapon weapon, WorldController worldController, Player player) {
         this.weapon = weapon;
         this.worldController = worldController;
+        this.player = player;
     }
 
-    public void update(){
+    public void update() {
         weapon.getGunSprite().draw(Main.getBatch());
+
         updateBullets();
         handleBulletCollisions();
     }
@@ -32,40 +34,70 @@ public class WeaponController {
     public void handleWeaponRotation(int x, int y) {
         Sprite weaponSprite = weapon.getGunSprite();
 
-        float weaponCenterX = (float) Gdx.graphics.getWidth() / 2;
-        float weaponCenterY = (float) Gdx.graphics.getHeight() / 2;
+        float weaponCenterX = Gdx.graphics.getWidth() / 2f;
+        float weaponCenterY = Gdx.graphics.getHeight() / 2f;
 
         float angle = (float) Math.atan2(y - weaponCenterY, x - weaponCenterX);
-
-        weaponSprite.setRotation((float) (3.14 - angle * MathUtils.radiansToDegrees));
+        weaponSprite.setRotation(180f - angle * MathUtils.radiansToDegrees);
     }
 
-    public void handleWeaponShoot(int x, int y){
+    public void handleWeaponShoot(int x, int y) {
         if (weapon.getCurrentAmmo() < 1 || weapon.isReloading()) {
             return;
         }
 
-        bullets.add(new Bullet(x, y));
+        float baseDamage = weapon.getWeapon().getDamage();
+
+        float actualDamage = baseDamage * player.getDamageMultiplier();
+
+        Bullet primary = new Bullet(x, y);
+        primary.setDamage((int)actualDamage);
+        bullets.add(primary);
+
+        if (player.shouldFireExtraProjectile()) {
+            Bullet extra = new Bullet(x, y);
+            extra.setDamage((int)actualDamage);
+
+            float offsetAngle = 10f * MathUtils.degRad;
+            Vector2 dir = new Vector2(
+                Gdx.graphics.getWidth() / 2f - x,
+                Gdx.graphics.getHeight() / 2f - y
+            ).nor();
+
+            float cos = MathUtils.cos(offsetAngle);
+            float sin = MathUtils.sin(offsetAngle);
+            Vector2 rotated = new Vector2(
+                dir.x * cos - dir.y * sin,
+                dir.x * sin + dir.y * cos
+            ).nor();
+            extra.getSprite().setRotation(rotated.angleDeg() + 90f);
+
+            bullets.add(extra);
+
+            player.clearExtraProjectileFlag();
+        }
+
         weapon.shootBullet();
         if (App.isIsSFXOn()) {
             weapon.getGunshot().play();
         }
     }
 
-    public void updateBullets() {
-        for(Bullet b : bullets) {
+    private void updateBullets() {
+        for (Bullet b : bullets) {
             b.getSprite().draw(Main.getBatch());
             Vector2 direction = new Vector2(
-                Gdx.graphics.getWidth()/2f - b.getX(),
-                Gdx.graphics.getHeight()/2f - b.getY()
+                Gdx.graphics.getWidth() / 2f - b.getX(),
+                Gdx.graphics.getHeight() / 2f - b.getY()
             ).nor();
 
-            b.getSprite().setX(b.getSprite().getX() - direction.x * 5);
-            b.getSprite().setY(b.getSprite().getY() + direction.y * 5);
+            b.getSprite().translate(
+                -direction.x * 5f,
+                direction.y * 5f
+            );
             b.updateRectangle();
         }
     }
-
 
     private void handleBulletCollisions() {
         Iterator<Bullet> bulletIterator = bullets.iterator();
@@ -110,4 +142,37 @@ public class WeaponController {
             bullet.getSprite().getY() < 0 ||
             bullet.getSprite().getY() > Gdx.graphics.getHeight();
     }
+
+    public Weapon getWeapon() {
+        return weapon;
+    }
+
+    public void setWeapon(Weapon weapon) {
+        this.weapon = weapon;
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
+    public ArrayList<Bullet> getBullets() {
+        return bullets;
+    }
+
+    public void setBullets(ArrayList<Bullet> bullets) {
+        this.bullets = bullets;
+    }
+
+    public WorldController getWorldController() {
+        return worldController;
+    }
+
+    public void setWorldController(WorldController worldController) {
+        this.worldController = worldController;
+    }
+
 }

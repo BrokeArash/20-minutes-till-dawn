@@ -8,9 +8,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.tilldawn.Main;
-import com.tilldawn.model.Bullet;
-import com.tilldawn.model.Enemy;
-import com.tilldawn.model.Weapon;
+import com.tilldawn.model.*;
 
 
 import java.util.ArrayList;
@@ -50,7 +48,9 @@ public class WeaponController {
 
         bullets.add(new Bullet(x, y));
         weapon.shootBullet();
-        weapon.getGunshot().play();
+        if (App.isIsSFXOn()) {
+            weapon.getGunshot().play();
+        }
     }
 
     public void updateBullets() { //TODO: add shooting here
@@ -92,6 +92,9 @@ public class WeaponController {
                 );
 
                 if (bullet.getRectangle().overlaps(enemyScreenRect)) {
+                    if (App.isIsSFXOn()) {
+                        GameAssetsManager.getGameAssetsManager().getMonsterDamage().play();
+                    }
                     enemy.takeDamage(bullet.getDamage());
                     bulletIterator.remove();
                     bulletHit = true;

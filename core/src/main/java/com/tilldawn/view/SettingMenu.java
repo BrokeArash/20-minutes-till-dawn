@@ -5,6 +5,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.tilldawn.Main;
 import com.tilldawn.controller.SettingMenuController;
 import com.tilldawn.model.GameAssetsManager;
 
@@ -15,6 +16,7 @@ public class SettingMenu implements Screen {
     TextButton backButton;
     private SelectBox<String> musicSelectBox;
     private Slider volumeSlider;
+    private CheckBox sfx;
 
 
     public SettingMenu(SettingMenuController controller, Skin skin) {
@@ -42,6 +44,9 @@ public class SettingMenu implements Screen {
         table.add(volumeSlider).fillX().uniformX();
         table.row().pad(10, 0, 0, 0);
 
+        sfx = new CheckBox("on/off", skin);
+        table.add(sfx);
+
         // Back button
         backButton = new TextButton("Back", skin);
         table.add(backButton).colspan(2).fillX().uniformX();
@@ -54,6 +59,7 @@ public class SettingMenu implements Screen {
         Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
         Gdx.gl.glClear(Gdx.gl.GL_COLOR_BUFFER_BIT);
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1/30f));
+
         stage.draw();
     }
 
@@ -64,7 +70,6 @@ public class SettingMenu implements Screen {
 
     @Override
     public void dispose() {
-
         stage.dispose();
     }
 
@@ -97,5 +102,9 @@ public class SettingMenu implements Screen {
 
     public TextButton getBackButton() {
         return backButton;
+    }
+
+    public CheckBox getSfx() {
+        return sfx;
     }
 }

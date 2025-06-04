@@ -2,11 +2,12 @@ package com.tilldawn.view;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.tilldawn.controller.MainMenuController;
 import com.tilldawn.model.App;
@@ -22,6 +23,7 @@ public class MainMenu implements Screen {
     private TextButton exitButton;
     private Label username;
     private Label point;
+    private Image avatar;
 
 
     private Table table;
@@ -36,33 +38,51 @@ public class MainMenu implements Screen {
         this.talentButton = new TextButton("talent menu", skin);
         this.continueButton = new TextButton("continue", skin);
         this.exitButton = new TextButton("exit", skin);
-        this.username = new Label(App.getCurrentUser().getUsername(), skin, "title");
+        this.username = new Label(App.getCurrentUser().getUsername(), skin);
         int maxScore = App.getUserDatabase().getMaxScore(App.getCurrentUser());
-        this.point = new Label(maxScore + " points", skin, "title");
+        this.point = new Label(maxScore + " points", skin);
         this.table = new Table(skin);
         this.controller = mainMenuController;
+        this.avatar = new Image(App.getCurrentUser().getAvatar());
         controller.setView(this);
     }
 
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
-        table.setFillParent(true);
-        table.left();
-        table.add(username).colspan(2).padRight(350);
-        table.right();
-        table.add(point).colspan(2).padLeft(350).row();
-        table.center();
-        table.add(continueButton).colspan(2).padBottom(30).padLeft(300).row();
-        table.add(preGameButton).colspan(2).padBottom(30).padLeft(300).row();
-        table.add(profileButton).colspan(2).padBottom(30).padLeft(300).row();
-        table.add(settingButton).colspan(2).padBottom(30).padLeft(300).row();
-        table.add(talentButton).colspan(2).padBottom(30).padLeft(300).row();
-        table.add(scoreBoardButton).colspan(2).padBottom(30).padLeft(300).row();
-        table.add(exitButton).colspan(2).padBottom(30).padLeft(300).row();
-        stage.addActor(table);
 
+        table.setFillParent(true);
+        table.top().padTop(20); // add some top padding
+
+        // Top row: Avatar + Username + Points
+        Table headerTable = new Table();
+        headerTable.add(avatar).width(80).height(80).padRight(20);
+        Table userInfo = new Table();
+        userInfo.add(username).align(Align.left).row();
+        userInfo.add(point).align(Align.left);
+        headerTable.add(userInfo).align(Align.left).expandX().left();
+
+        table.add(headerTable).colspan(2).padBottom(20).expandX().row();
+
+        // Menu buttons centered
+        TextButton[] buttons = {
+            continueButton, preGameButton, profileButton,
+            settingButton, talentButton, scoreBoardButton, exitButton
+        };
+
+        for (TextButton button : buttons) {
+            table.add(button)
+                .width(300)
+                .height(70)
+                .padBottom(20)
+                .colspan(2)
+                .center()
+                .row();
+        }
+
+        stage.addActor(table);
     }
+
 
     @Override
     public void render(float delta) {

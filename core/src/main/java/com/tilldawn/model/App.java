@@ -11,6 +11,7 @@ public class App {
     private static User currentUser;
     private static UserDatabase userDatabase;
     private static ScoreManager scoreManager;
+    private static boolean isSFXOn = true;
 
     public static void initialize() {
         userDatabase = new UserDatabase();
@@ -46,4 +47,11 @@ public class App {
         App.currentUser = currentUser;
     }
 
+    public static boolean isIsSFXOn() {
+        return isSFXOn;
+    }
+
+    public static void setIsSFXOn(boolean isSFXOn) {
+        App.isSFXOn = isSFXOn;
+    }
 }

@@ -2,6 +2,7 @@ package com.tilldawn.view;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -63,7 +64,7 @@ public class ScoreBoardMenu extends ScreenAdapter {
     private void initializeUI() {
         // Initialize the sortType SelectBox before the controller tries to access it
         sortType = new SelectBox<>(skin);
-        sortType.setItems("Score (High to Low)", "Score (Low to High)", "Date (Newest)", "Date (Oldest)");
+        sortType.setItems("Score (High to Low)", "Score (Low to High)", "Date (Newest)", "Date (Oldest)", "Kill", "Time", "Username");
         sortType.setSelected("Score (High to Low)"); // Set default selection
 
         // Initialize other UI components
@@ -105,12 +106,12 @@ public class ScoreBoardMenu extends ScreenAdapter {
 
         // Headers
         Table headerTable = new Table();
-        headerTable.add(new Label("Rank", skin)).width(60).pad(5);
+        headerTable.add(new Label("Rank", skin)).width(80).pad(5);
         headerTable.add(new Label("Player", skin)).width(150).pad(5);
         headerTable.add(new Label("Score", skin)).width(100).pad(5);
         headerTable.add(new Label("Kills", skin)).width(80).pad(5);
         headerTable.add(new Label("Time", skin)).width(80).pad(5);
-        headerTable.add(new Label("Mode", skin)).width(100).pad(5);
+        headerTable.add(new Label("Mode", skin)).width(150).pad(5);
         headerTable.add(new Label("Date", skin)).width(120).pad(5);
         rootTable.add(headerTable).padBottom(10).row();
 
@@ -198,12 +199,39 @@ public class ScoreBoardMenu extends ScreenAdapter {
                     }
                 });
                 break;
+            case "Kill":
+                topScorers.sort(new Comparator<ScoreRecord>() {
+                    @Override
+                    public int compare(ScoreRecord o2, ScoreRecord o1) {
+                        return Long.compare(o1.getKill(), o2.getKill());
+                    }
+                });
+                break;
+            case "Time":
+                topScorers.sort(new Comparator<ScoreRecord>() {
+                    @Override
+                    public int compare(ScoreRecord o2, ScoreRecord o1) {
+                        return Long.compare(o1.getTime(), o2.getTime());
+                    }
+                });
+                break;
+            case "Username":
+                topScorers.sort(new Comparator<ScoreRecord>() {
+                    @Override
+                    public int compare(ScoreRecord o1, ScoreRecord o2) {
+                        String name1 = o1.getUser() != null ? o1.getUser().getUsername() : "";
+                        String name2 = o2.getUser() != null ? o2.getUser().getUsername() : "";
+                        return name1.compareToIgnoreCase(name2);
+                    }
+                });
+                break;
+
         }
 
         // Limit to top 50 scores to avoid performance issues
-        if (topScorers.size > 50) {
+        if (topScorers.size > 10) {
             Array<ScoreRecord> limitedScores = new Array<>();
-            for (int i = 0; i < 50; i++) {
+            for (int i = 0; i < 10; i++) {
                 limitedScores.add(topScorers.get(i));
             }
             topScorers = limitedScores;
@@ -219,47 +247,63 @@ public class ScoreBoardMenu extends ScreenAdapter {
         }
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+        User currentUser = App.getCurrentUser();
 
         for (int i = 0; i < topScorers.size; i++) {
             ScoreRecord record = topScorers.get(i);
+            User user = record.getUser();
+            String playerName = user != null ? user.getUsername() : "Unknown";
 
-            // Create row for this score
             Table rowTable = new Table();
 
-            // Rank
-            rowTable.add(new Label(String.valueOf(i + 1), skin)).width(60).pad(5);
+            // Create and style labels
+            Label rankLabel = new Label(String.valueOf(i + 1), skin);
+            Label nameLabel = new Label(playerName, skin);
+            Label scoreLabel = new Label(String.valueOf(record.getScore()), skin);
+            Label killLabel = new Label(String.valueOf(record.getKill()), skin);
 
-            // Player name
-            String playerName = record.getUser() != null ? record.getUser().getUsername() : "Unknown";
-            rowTable.add(new Label(playerName, skin)).width(150).pad(5);
-
-            // Score
-            rowTable.add(new Label(String.valueOf(record.getScore()), skin)).width(100).pad(5);
-
-            // Kills
-            rowTable.add(new Label(String.valueOf(record.getKill()), skin)).width(80).pad(5);
-
-            // Time (convert seconds to mm:ss format)
             int timeInSeconds = record.getTime();
-            int minutes = timeInSeconds / 60;
-            int seconds = timeInSeconds % 60;
-            String timeString = String.format("%02d:%02d", minutes, seconds);
-            rowTable.add(new Label(timeString, skin)).width(80).pad(5);
+            String timeString = String.format("%02d:%02d", timeInSeconds / 60, timeInSeconds % 60);
+            Label timeLabel = new Label(timeString, skin);
 
-            // Game mode
-            String gameMode = record.getGameMode() != null ? record.getGameMode().toString() : "Unknown";
-            rowTable.add(new Label(gameMode, skin)).width(100).pad(5);
+            String modeName = record.getGameMode() != null ? record.getGameMode().getName() : "Unknown";
+            Label modeLabel = new Label(modeName, skin);
 
-            // Date
             String dateString = dateFormat.format(new Date(record.getTimestamp()));
-            rowTable.add(new Label(dateString, skin)).width(120).pad(5);
+            Label dateLabel = new Label(dateString, skin);
+
+            // Color logic
+            if (i == 0) {
+                setColorAll(Color.GOLD, rankLabel, nameLabel, scoreLabel, killLabel, timeLabel, modeLabel, dateLabel);
+            } else if (i == 1) {
+                setColorAll(Color.GRAY, rankLabel, nameLabel, scoreLabel, killLabel, timeLabel, modeLabel, dateLabel);
+            } else if (i == 2) {
+                setColorAll(new Color(0.8f, 0.5f, 0.2f, 1), rankLabel, nameLabel, scoreLabel, killLabel, timeLabel, modeLabel, dateLabel);
+            } else if (user != null && user.equals(currentUser)) {
+                setColorAll(Color.CYAN, rankLabel, nameLabel, scoreLabel, killLabel, timeLabel, modeLabel, dateLabel);
+            }
+
+            // Add to row
+            rowTable.add(rankLabel).width(60).pad(5);
+            rowTable.add(nameLabel).width(150).pad(5);
+            rowTable.add(scoreLabel).width(100).pad(5);
+            rowTable.add(killLabel).width(80).pad(5);
+            rowTable.add(timeLabel).width(80).pad(5);
+            rowTable.add(modeLabel).width(150).pad(5);
+            rowTable.add(dateLabel).width(120).pad(5);
 
             scoresTable.add(rowTable).fillX().row();
 
-            // Add separator line for better readability
             if (i < topScorers.size - 1) {
                 scoresTable.add(new Label("", skin)).height(2).fillX().row();
             }
+        }
+    }
+
+    // Helper method to set same color to multiple labels
+    private void setColorAll(Color color, Label... labels) {
+        for (Label label : labels) {
+            label.setColor(color);
         }
     }
 

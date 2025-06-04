@@ -1,5 +1,7 @@
 package com.tilldawn.model;
 
+import com.badlogic.gdx.graphics.Texture;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +11,7 @@ public class User {
     private String password;
     private String sec; // security answer
     private List<ScoreRecord> scoreRecords; // Add this field
+    private Texture avatar;
 
     // Constructor for new users (without ID)
     public User(String username, String password, String sec) {
@@ -16,6 +19,7 @@ public class User {
         this.password = password;
         this.sec = sec;
         this.scoreRecords = new ArrayList<>(); // Initialize the list
+        this.avatar = GameAssetsManager.getGameAssetsManager().getRandomAvatar();
     }
 
     // Constructor for existing users (with ID from database)
@@ -25,6 +29,7 @@ public class User {
         this.password = password;
         this.sec = sec;
         this.scoreRecords = new ArrayList<>(); // Initialize the list
+        this.avatar = GameAssetsManager.getGameAssetsManager().getRandomAvatar();
     }
 
     // Add method to add a score record
@@ -103,5 +108,9 @@ public class User {
     @Override
     public int hashCode() {
         return username.hashCode();
+    }
+
+    public Texture getAvatar() {
+        return avatar;
     }
 }

@@ -6,6 +6,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.tilldawn.model.enums.EnemyEnum;
 
@@ -21,6 +22,10 @@ public class GameAssetsManager {
     private Preferences preferences;
     private final String bullet;
     private Texture backgroundTexture;
+    private Texture cursor;
+    private Texture abbyPortrait;
+    private Texture hasturPortrait;
+    private Texture hinaPortrait;
     private Sound reloadSound;
     private Sound gunshot;
     private Sound monsterAttack;
@@ -45,6 +50,13 @@ public class GameAssetsManager {
 
         float volume = preferences.getFloat("musicVolume", 0.5f);
         currentMusic.setVolume(volume);
+
+        cursor = new Texture("Images_grouped_1/Sprite/T/T_CursorSprite.png");
+        abbyPortrait =  new Texture("Images_grouped_1/Sprite/T/T_Abby_Portrait.png");
+        hasturPortrait = new Texture("Images_grouped_1/Sprite/T/T_Hastur_Portrait.png");
+        hinaPortrait = new Texture("Images_grouped_1/Sprite/T/T_Hina_Portrait.png");
+
+
 
         bullet = "Images_grouped_1/Sprite/Icon/Icon_Bullet_Storm.png";
         this.backgroundTexture = new Texture("background.png");
@@ -156,5 +168,21 @@ public class GameAssetsManager {
             type.getTexture().dispose();
         }
     }
+    public Texture getRandomAvatar() {
+        int choice = (int) (Math.random() * 3);
+        switch (choice) {
+            case 0:
+                return abbyPortrait;
+            case 1:
+                return hasturPortrait;
+            case 2:
+            default:
+                return hinaPortrait;
+        }
+    }
 
+    private long reloadSoundId;
+    private long gunshotId;
+    private long monsterDamageId;
+    private long monsterAttackId;
 }

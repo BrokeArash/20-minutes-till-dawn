@@ -61,8 +61,9 @@ public class Enemy {
 
     private void attack(Player player) {
         player.takeDamage(type.getAttackDamage());
-        GameAssetsManager.getGameAssetsManager().getMonsterAttack().play();
-        // Play attack sound
+        if (App.isIsSFXOn()) {
+            GameAssetsManager.getGameAssetsManager().getMonsterAttack().play();
+        }
     }
 
     public EnemyEnum getType() {

@@ -38,7 +38,9 @@ public class WeaponController {
         float weaponCenterY = Gdx.graphics.getHeight() / 2f;
 
         float angle = (float) Math.atan2(y - weaponCenterY, x - weaponCenterX);
-        weaponSprite.setRotation(180f - angle * MathUtils.radiansToDegrees);
+        float angleDeg = - angle * MathUtils.radiansToDegrees;
+        weaponSprite.setRotation(angleDeg);
+
     }
 
     public void handleWeaponShoot(int x, int y) {

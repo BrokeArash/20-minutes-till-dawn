@@ -36,7 +36,7 @@ public class PlayerController {
             String status = "you lost";
             User currentUser = App.getCurrentUser();
             ScoreRecord record = new ScoreRecord(currentUser, App.getGame().getScore(), App.getGame().getKill(),
-                App.getGame().getTime(), App.getGame().getMode()); // or whatever mode
+                App.getGame().getTime(), App.getGame().getMode());
             App.getUserDatabase().saveScoreRecord(record);
             Main.getMain().changeScreen(new GameEndMenu(status, App.getGame().getScore(),
                 App.getGame().getKill(), App.getGame().getTime(),

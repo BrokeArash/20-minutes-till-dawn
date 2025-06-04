@@ -32,9 +32,7 @@ public class GameAssetsManager {
     private Sound monsterDamage;
     private Sound dropGet;
 
-    // Private constructor for singleton
     private GameAssetsManager() {
-        // Ensure these file paths exist in your assets folder
         skin = new Skin(Gdx.files.internal("star-soldier/skin/star-soldier-ui.json"));
         gameLogo = new Texture(Gdx.files.internal("Images_grouped_1/Sprite/T/T_20Logo.png"));
         backgroundTex = new Texture(Gdx.files.internal("Images_grouped_1/Sprite/T/T_TitleLeaves.png"));
@@ -70,9 +68,6 @@ public class GameAssetsManager {
 
     }
 
-    /**
-     * Returns the singleton instance, creating it if necessary.
-     */
     public static GameAssetsManager getGameAssetsManager() {
         if (gameAssetsManager == null) {
             gameAssetsManager = new GameAssetsManager();
@@ -175,9 +170,7 @@ public class GameAssetsManager {
     }
 
     public void dispose() {
-        // ... existing disposal ...
 
-        // Dispose enemy textures
         for (EnemyEnum type : EnemyEnum.values()) {
             type.getTexture().dispose();
         }

@@ -21,30 +21,22 @@ public class ScoreRecord implements Comparable<ScoreRecord> {
         this.timestamp = System.currentTimeMillis();
     }
 
-    // Default compareTo: sort by score descending.
     @Override
     public int compareTo(ScoreRecord other) {
         return Integer.compare(other.score, this.score);
     }
 
-    // === Static comparators for alternative sorts ===
-
-    /** Comparator that sorts by score descending (higher score first). */
     public static Comparator<ScoreRecord> byScore() {
         return Comparator.comparingInt(ScoreRecord::getScore).reversed();
     }
 
-    /** Comparator that sorts by kill descending (more kills first). */
     public static Comparator<ScoreRecord> byKill() {
         return Comparator.comparingInt(ScoreRecord::getKill).reversed();
     }
 
-    /** Comparator that sorts by time descending (longer survival time first). */
     public static Comparator<ScoreRecord> byTime() {
         return Comparator.comparingInt(ScoreRecord::getTime).reversed();
     }
-
-    // ========== Getters ==========
 
     public User getUser() {
         return user;

@@ -23,7 +23,6 @@ public class GameMenu implements Screen, InputProcessor {
     private Stage stage;
     private GameMenuController controller;
 
-    // HUD fields
     private TextField bulletNum;
     private TextField hpField;
     private TextField killField;
@@ -33,15 +32,12 @@ public class GameMenu implements Screen, InputProcessor {
     private Label label;
     private boolean isPaused = false;
 
-
-    // Shortcut to the player
     private Player player = App.getGame().getPlayer();
 
     public GameMenu(GameMenuController controller, Skin skin) {
         this.controller = controller;
         controller.setView(this);
 
-        // Create all the TextFields, etc.
         int ammo = player.getWeapon().getCurrentAmmo();
         float hp  = player.getPlayerHealth();
 
@@ -65,31 +61,21 @@ public class GameMenu implements Screen, InputProcessor {
         levelField.setSize(100, 30);
         levelField.setDisabled(true);
 
-        // Build a custom ProgressBarStyle (since our Skin has no "default‐horizontal")
         ProgressBar.ProgressBarStyle xpStyle = new ProgressBar.ProgressBarStyle();
-        // "white" is a drawable in most LibGDX skins; recolor it on the fly:
         xpStyle.background   = skin.newDrawable("white", Color.DARK_GRAY);
         xpStyle.knobBefore   = skin.newDrawable("white", Color.GREEN);
         xpStyle.knob         = skin.newDrawable("white", Color.RED);
 
-        // Create the XP bar with the style:
-        //   min = 0, max = player.getLevel() * 20  (for example)
-        //   stepSize = 1f, horizontal = false
         float initialMaxXp = player.getLevel() * 20f;
         xpBar = new ProgressBar(0f, initialMaxXp, 1f, false, xpStyle);
         xpBar.setPosition(10, Gdx.graphics.getHeight() - 300);
         xpBar.setSize(200, 50);
         xpBar.setDisabled(true);
 
-        // Timer field
         timerField = new TextField("", skin);
         timerField.setPosition(Gdx.graphics.getWidth() / 2f - 50, Gdx.graphics.getHeight() - 30);
         timerField.setSize(150, 30);
         timerField.setDisabled(true);
-
-
-
-        // Create the Stage and add all actors
 
 
     }
@@ -114,27 +100,22 @@ public class GameMenu implements Screen, InputProcessor {
 
     @Override
     public void render(float delta) {
-        // 1) Clear
         Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         if (!isPaused) {
-            // 2) Game logic updates
             player.getWeapon().update(delta);
             App.getGame().updateTime(delta);
 
-            // 4) Draw the world (via your GameMenuController)
             Main.getBatch().begin();
-            controller.updateGame(); // <<<< THIS only runs when not paused
+            controller.updateGame();
             Main.getBatch().end();
         }
 
-        // 3) Handle reload key (you might want to move this inside the isPaused check too)
         if (!isPaused && Gdx.input.isKeyPressed(Input.Keys.R) && !player.getWeapon().isReloading()) {
             player.getWeapon().startReload();
         }
 
-        // 5) Update HUD elements (these can update even when paused)
         killField.setText(String.valueOf(App.getGame().getKill()));
         timerField.setText(App.getGame().getFormattedTime());
 
@@ -159,14 +140,12 @@ public class GameMenu implements Screen, InputProcessor {
         xpBar.setRange(0f, newMaxXp);
         xpBar.setValue(player.getXp());
 
-        // 6) Draw the Stage (HUD)
         stage.act(Math.min(delta, 1 / 30f));
         stage.draw();
     }
 
 
     private void handleGameOver() {
-        // Save the final score and switch to a “game over” screen
         App.getGame().setStatus("you won");
         var currentUser = App.getCurrentUser();
         var record = new com.tilldawn.model.ScoreRecord(
@@ -200,7 +179,6 @@ public class GameMenu implements Screen, InputProcessor {
         stage.dispose();
     }
 
-    // ——— InputProcessor to forward clicks to WeaponController ———
     @Override
     public boolean keyDown(int keycode) {
         if (keycode == Input.Keys.ESCAPE) {
@@ -217,10 +195,8 @@ public class GameMenu implements Screen, InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        // Convert screen coords to stage coords
         Vector2 stageCoords = stage.screenToStageCoordinates(new Vector2(screenX, screenY));
 
-        // Try passing input to the stage first
         InputEvent event = new InputEvent();
         event.setType(InputEvent.Type.touchDown);
         event.setStage(stage);
@@ -230,7 +206,6 @@ public class GameMenu implements Screen, InputProcessor {
         event.setButton(button);
 
         if (stage.hit(stageCoords.x, stageCoords.y, true) != null && isPaused) {
-            // UI element was clicked — don't shoot
             return true;
         }
 
@@ -255,7 +230,6 @@ public class GameMenu implements Screen, InputProcessor {
     }
     @Override public boolean scrolled(float amountX, float amountY)    { return false; }
 
-    // Public getter, if another class needs to update anything in the HUD
     public TextField getBulletNum() {
         return bulletNum;
     }

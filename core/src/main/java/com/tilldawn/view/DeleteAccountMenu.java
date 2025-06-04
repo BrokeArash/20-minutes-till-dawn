@@ -54,11 +54,9 @@ public class DeleteAccountMenu implements Screen {
         table.setFillParent(true);
         table.center();
 
-        // Title
         Label titleLabel = new Label("Delete Account", skin, "title");
         titleLabel.setColor(Color.WHITE);
 
-        // Back button
         TextButton backButton = new TextButton("Cancel", skin);
         backButton.addListener(new ChangeListener() {
             @Override
@@ -67,7 +65,6 @@ public class DeleteAccountMenu implements Screen {
             }
         });
 
-        // Delete button
         TextButton deleteButton = new TextButton("Permanently Delete Account", skin);
         deleteButton.setColor(Color.RED);
         deleteButton.addListener(new ChangeListener() {
@@ -77,7 +74,6 @@ public class DeleteAccountMenu implements Screen {
             }
         });
 
-        // Layout
         table.add(titleLabel).padBottom(30).row();
         table.add(warningLabel).padBottom(20).row();
         table.add(new Label("Enter password to confirm:", skin)).padBottom(10).row();
@@ -101,7 +97,6 @@ public class DeleteAccountMenu implements Screen {
             errorLabel.setText("Account deleted successfully");
             errorLabel.setColor(Color.GREEN);
 
-            // Clear current user and return to login after delay
             App.setCurrentUser(null);
             Timer.schedule(new Timer.Task() {
                 @Override

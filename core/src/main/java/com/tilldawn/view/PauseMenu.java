@@ -36,14 +36,11 @@ public class PauseMenu implements Screen {
         this.abilities = new TextButton("Abilities", skin);
         this.giveUp = new TextButton("Give Up", skin);
 
-        // Label for showing messages like "no cheat"
         this.messageLabel = new Label("", skin);
         messageLabel.setColor(Color.RED);
 
-        // Add listeners
         addListeners();
 
-        // Add buttons to table
         table.add(resume).pad(10).row();
         table.add(cheat).pad(10).row();
         table.add(abilities).pad(10).row();

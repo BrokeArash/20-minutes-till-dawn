@@ -11,9 +11,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * Manages spawning, updating, rendering, and removal of all Enemies + XP drops.
- */
 public class EnemyController {
     private static List<Enemy> enemies;
     private PlayerController playerController;
@@ -23,10 +20,8 @@ public class EnemyController {
     private int maxEnemies = 10;
     private float spawnRadius = 300f;
 
-    // Holds all active XPDrop instances currently on the ground
     private Array<XPDrop> xpDrops;
 
-    // Enemy spawning pool
     private Array<EnemyEnum> spawnable = new Array<>();
 
     public EnemyController(PlayerController playerController, WorldController worldController) {
@@ -43,40 +38,32 @@ public class EnemyController {
         }
     }
 
-    /** Called each frame. Updates enemies, spawns XP drops when they die, updates & renders XP drops. */
     public void update() {
         float deltaTime = Gdx.graphics.getDeltaTime();
         Player player = playerController.getPlayer();
 
-        // 1) Possibly spawn new enemies
         spawnTimer += deltaTime;
         if (spawnTimer >= spawnInterval && enemies.size() < maxEnemies) {
             spawnEnemy();
             spawnTimer = 0f;
         }
 
-        // 2) Update each enemy; if it just died, spawn an XP drop at its position.
         Iterator<Enemy> enemyIter = enemies.iterator();
         while (enemyIter.hasNext()) {
             Enemy enemy = enemyIter.next();
 
             if (!enemy.isAlive()) {
-                // Play monster‐killed SFX
                 if (App.isIsSFXOn()) {
                     GameAssetsManager.getGameAssetsManager().getMonsterKill().play();
                 }
-                // Award a kill count to the Game
                 App.getGame().addKill();
 
-                // Spawn an XP drop at the enemy’s last known position
                 spawnXpDrop(enemy.getPosX(), enemy.getPosY(), 3);
 
-                // Remove this enemy from the list
                 enemyIter.remove();
                 continue;
             }
 
-            // If still alive, update its AI / movement / attacks
             enemy.update(deltaTime, player);
             if (enemy.canAttack(player)) {
                 enemy.startAttacking();
@@ -85,7 +72,6 @@ public class EnemyController {
                 moveEnemy(enemy, deltaTime);
             }
 
-            // Draw the enemy on screen
             Camera camera = worldController.getCamera();
             float screenX = camera.getScreenX(enemy.getPosX());
             float screenY = camera.getScreenY(enemy.getPosY());
@@ -93,13 +79,9 @@ public class EnemyController {
             Main.getBatch().draw(tex, screenX, screenY);
         }
 
-        // 3) Update & check all active XP drops for player pickup
-        // 3) Update & check all active XP drops for player pickup
 
-// Build the player's bounding box in WORLD coordinates:
         float pw = player.getPlayerSprite().getWidth();
         float ph = player.getPlayerSprite().getHeight();
-// If your Player’s (x,y) is its center, subtract half‐size; otherwise adjust as needed.
         Rectangle playerWorldBounds = new Rectangle(
             player.getPosX() - pw/2f,
             player.getPosY() - ph/2f,
@@ -110,9 +92,7 @@ public class EnemyController {
         for (int i = xpDrops.size - 1; i >= 0; i--) {
             XPDrop drop = xpDrops.get(i);
 
-            // Now both `drop.bounds` and `playerWorldBounds` are in WORLD space:
             if (drop.collidesWith(playerWorldBounds)) {
-                // Player picks it up:
                 player.addXP(drop.getXpValue());
                 if (App.isIsSFXOn()) {
                     GameAssetsManager.getGameAssetsManager().getDropGet().play();
@@ -121,7 +101,6 @@ public class EnemyController {
                 continue;
             }
 
-            // Otherwise, render the drop at screen coords as before:
             Camera camera = worldController.getCamera();
             float screenX = camera.getScreenX(drop.getWorldX());
             float screenY = camera.getScreenY(drop.getWorldY());
@@ -137,7 +116,6 @@ public class EnemyController {
 
     }
 
-    /** Helper: spawn one enemy, at a random point around the player. */
     private void spawnEnemy() {
         Player player = playerController.getPlayer();
         int maxAttempts = 10;
@@ -169,19 +147,8 @@ public class EnemyController {
                 }
             }
         }
-
-//        // Fallback: random in world bounds
-//        float[] bounds = worldController.getWorldBounds(
-//            type.getTexture().getWidth(), type.getTexture().getHeight()
-//        );
-//        float randX = bounds[0] + (float) Math.random() * (bounds[1] - bounds[0]);
-//        float randY = bounds[2] + (float) Math.random() * (bounds[3] - bounds[2]);
-//        Enemy fallback = new Enemy(randX, randY, getRandomEnemyType());
-//        fallback.updateRectangle();
-//        enemies.add(fallback);
     }
 
-    /** Returns a weighted random EnemyEnum type based on spawnRate. */
     private EnemyEnum getRandomEnemyType() {
         if (spawnable.size == 0) {
             return EnemyEnum.TENTACLE_MONSTER;
@@ -195,7 +162,6 @@ public class EnemyController {
         return weighted.random();
     }
 
-    /** Moves one enemy toward the player, respecting world collisions. */
     private void moveEnemy(Enemy enemy, float deltaTime) {
         Player player = playerController.getPlayer();
         float dirX = player.getPosX() - enemy.getPosX();
@@ -221,7 +187,6 @@ public class EnemyController {
         }
     }
 
-    /** Create a new XPDrop at (worldX, worldY) with the given xpValue. */
     private void spawnXpDrop(float worldX, float worldY, int xpValue) {
         XPDrop drop = new XPDrop(
             GameAssetsManager.getGameAssetsManager().getDrop(),
@@ -281,6 +246,5 @@ public class EnemyController {
     }
 
     public void dispose() {
-        // dispose any enemy‐related textures if needed
     }
 }

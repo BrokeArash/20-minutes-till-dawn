@@ -52,7 +52,7 @@ public class WeaponController {
         }
     }
 
-    public void updateBullets() { //TODO: add shooting here
+    public void updateBullets() {
         for(Bullet b : bullets) {
             b.getSprite().draw(Main.getBatch());
             Vector2 direction = new Vector2(
@@ -68,7 +68,6 @@ public class WeaponController {
 
 
     private void handleBulletCollisions() {
-        // Use iterators to safely remove items during iteration
         Iterator<Bullet> bulletIterator = bullets.iterator();
 
         while (bulletIterator.hasNext()) {
@@ -78,11 +77,9 @@ public class WeaponController {
             for (Enemy enemy : EnemyController.getEnemies()) {
                 enemy.updateRectangle();
 
-                // CONVERT ENEMY POSITION TO SCREEN SPACE
                 float enemyScreenX = worldController.getCamera().getScreenX(enemy.getPosX());
                 float enemyScreenY = worldController.getCamera().getScreenY(enemy.getPosY());
 
-                // CREATE TEMPORARY SCREEN-SPACE RECTANGLE FOR ENEMY
                 Rectangle enemyScreenRect = new Rectangle(
                     enemyScreenX,
                     enemyScreenY,
@@ -101,7 +98,6 @@ public class WeaponController {
                 }
             }
 
-            // Remove bullets that go off-screen
             if (!bulletHit && isBulletOffScreen(bullet)) {
                 bulletIterator.remove();
             }

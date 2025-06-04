@@ -39,35 +39,26 @@ public class ScoreBoardMenu extends ScreenAdapter {
     private UserDatabase userDatabase;
 
     public ScoreBoardMenu() {
-        // Initialize database connection
         userDatabase = new UserDatabase();
 
-        // Get skin from asset manager
         skin = GameAssetsManager.getGameAssetsManager().getSkin();
         stage = new Stage(new ScreenViewport());
-
-        // Initialize UI components FIRST
         initializeUI();
 
-        // THEN set up the controller
         controller = new ScoreBoardMenuController();
         controller.setView(this);
 
-        // Set up UI layout and load scores
         setupUI();
         loadScores();
 
-        // Set input processor
         Gdx.input.setInputProcessor(stage);
     }
 
     private void initializeUI() {
-        // Initialize the sortType SelectBox before the controller tries to access it
         sortType = new SelectBox<>(skin);
         sortType.setItems("Score (High to Low)", "Score (Low to High)", "Date (Newest)", "Date (Oldest)", "Kill", "Time", "Username");
-        sortType.setSelected("Score (High to Low)"); // Set default selection
+        sortType.setSelected("Score (High to Low)");
 
-        // Initialize other UI components
         rootTable = new Table();
         rootTable.setFillParent(true);
         stage.addActor(rootTable);
@@ -77,10 +68,8 @@ public class ScoreBoardMenu extends ScreenAdapter {
         scrollPane.setScrollbarsVisible(true);
         scrollPane.setFadeScrollBars(false);
 
-        // Initialize top scorers array
         topScorers = new Array<>();
 
-        // Initialize back button
         backButton = new TextButton("BACK", skin);
         backButton.addListener(new ClickListener() {
             @Override
@@ -94,17 +83,15 @@ public class ScoreBoardMenu extends ScreenAdapter {
         rootTable.clear();
         rootTable.top();
 
-        // Title
+
         Label titleLabel = new Label("SCOREBOARD", skin, "title");
         rootTable.add(titleLabel).padTop(20).padBottom(30).row();
 
-        // Sort options
         Table sortTable = new Table();
         sortTable.add(new Label("Sort by: ", skin)).padRight(10);
         sortTable.add(sortType);
         rootTable.add(sortTable).padBottom(20).row();
 
-        // Headers
         Table headerTable = new Table();
         headerTable.add(new Label("Rank", skin)).width(80).pad(5);
         headerTable.add(new Label("Player", skin)).width(150).pad(5);
@@ -115,31 +102,24 @@ public class ScoreBoardMenu extends ScreenAdapter {
         headerTable.add(new Label("Date", skin)).width(120).pad(5);
         rootTable.add(headerTable).padBottom(10).row();
 
-        // Scores table in scroll pane
         rootTable.add(scrollPane).expand().fill().padBottom(20).row();
 
-        // Back button
         rootTable.add(backButton).width(200).height(50);
     }
 
     private void loadScores() {
         try {
-            // Get all score records from all users
             List<ScoreRecord> allScores = getAllScoreRecords();
 
-            // Convert to Array and sort based on current selection
             topScorers.clear();
             topScorers.addAll(allScores.toArray(new ScoreRecord[0]));
 
-            // Sort based on current selection
             sortScores();
 
-            // Update the display
             updateScoresDisplay();
 
         } catch (Exception e) {
             Gdx.app.error("ScoreBoardMenu", "Error loading scores", e);
-            // Show error message to user
             scoresTable.clear();
             scoresTable.add(new Label("Error loading scores", skin)).pad(20);
         }
@@ -148,10 +128,8 @@ public class ScoreBoardMenu extends ScreenAdapter {
     private List<ScoreRecord> getAllScoreRecords() {
         List<ScoreRecord> allScores = new ArrayList<>();
 
-        // Get all users from database
         Array<User> users = userDatabase.getUsers();
 
-        // For each user, get their score records
         for (User user : users) {
             List<ScoreRecord> userScores = userDatabase.getScoreRecords(user);
             allScores.addAll(userScores);
@@ -228,7 +206,6 @@ public class ScoreBoardMenu extends ScreenAdapter {
 
         }
 
-        // Limit to top 50 scores to avoid performance issues
         if (topScorers.size > 10) {
             Array<ScoreRecord> limitedScores = new Array<>();
             for (int i = 0; i < 10; i++) {
@@ -256,7 +233,6 @@ public class ScoreBoardMenu extends ScreenAdapter {
 
             Table rowTable = new Table();
 
-            // Create and style labels
             Label rankLabel = new Label(String.valueOf(i + 1), skin);
             Label nameLabel = new Label(playerName, skin);
             Label scoreLabel = new Label(String.valueOf(record.getScore()), skin);
@@ -272,7 +248,6 @@ public class ScoreBoardMenu extends ScreenAdapter {
             String dateString = dateFormat.format(new Date(record.getTimestamp()));
             Label dateLabel = new Label(dateString, skin);
 
-            // Color logic
             if (i == 0) {
                 setColorAll(Color.GOLD, rankLabel, nameLabel, scoreLabel, killLabel, timeLabel, modeLabel, dateLabel);
             } else if (i == 1) {
@@ -283,7 +258,6 @@ public class ScoreBoardMenu extends ScreenAdapter {
                 setColorAll(Color.CYAN, rankLabel, nameLabel, scoreLabel, killLabel, timeLabel, modeLabel, dateLabel);
             }
 
-            // Add to row
             rowTable.add(rankLabel).width(60).pad(5);
             rowTable.add(nameLabel).width(150).pad(5);
             rowTable.add(scoreLabel).width(100).pad(5);
@@ -300,7 +274,6 @@ public class ScoreBoardMenu extends ScreenAdapter {
         }
     }
 
-    // Helper method to set same color to multiple labels
     private void setColorAll(Color color, Label... labels) {
         for (Label label : labels) {
             label.setColor(color);
@@ -311,7 +284,6 @@ public class ScoreBoardMenu extends ScreenAdapter {
         loadScores();
     }
 
-    // Getters for controller
     public SelectBox<String> getSortType() {
         return sortType;
     }
@@ -326,15 +298,12 @@ public class ScoreBoardMenu extends ScreenAdapter {
 
     @Override
     public void render(float delta) {
-        // Clear screen
         Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // Update and draw stage
         stage.act(delta);
         stage.draw();
 
-        // Check controller buttons
         if (controller != null) {
             controller.checkButton();
         }

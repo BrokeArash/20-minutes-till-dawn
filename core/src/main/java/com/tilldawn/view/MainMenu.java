@@ -52,9 +52,8 @@ public class MainMenu implements Screen {
         Gdx.input.setInputProcessor(stage);
 
         table.setFillParent(true);
-        table.top().padTop(20); // add some top padding
+        table.top().padTop(20);
 
-        // Top row: Avatar + Username + Points
         Table headerTable = new Table();
         headerTable.add(avatar).width(80).height(80).padRight(20);
         Table userInfo = new Table();
@@ -64,7 +63,6 @@ public class MainMenu implements Screen {
 
         table.add(headerTable).colspan(2).padBottom(20).expandX().row();
 
-        // Menu buttons centered
         TextButton[] buttons = {
             continueButton, preGameButton, profileButton,
             settingButton, talentButton, scoreBoardButton, exitButton

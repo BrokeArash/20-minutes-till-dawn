@@ -29,7 +29,6 @@ public class SettingMenu implements Screen {
         table.setFillParent(true);
         stage.addActor(table);
 
-        // Music selection
         table.add(new Label("Background Music:", skin)).left();
         musicSelectBox = new SelectBox<>(skin);
         musicSelectBox.setItems("Music Track 1", "Music Track 2");
@@ -37,7 +36,6 @@ public class SettingMenu implements Screen {
         table.add(musicSelectBox).fillX().uniformX();
         table.row().pad(10, 0, 0, 0);
 
-        // Volume control
         table.add(new Label("Music Volume:", skin)).left();
         volumeSlider = new Slider(0f, 1f, 0.01f, false, skin);
         volumeSlider.setValue(assetsManager.getCurrentVolume());
@@ -47,7 +45,6 @@ public class SettingMenu implements Screen {
         sfx = new CheckBox("sfx", skin);
         table.add(sfx);
 
-        // Back button
         backButton = new TextButton("Back", skin);
         table.add(backButton).colspan(2).fillX().uniformX();
         controller.setView(this);
@@ -73,7 +70,6 @@ public class SettingMenu implements Screen {
         stage.dispose();
     }
 
-    // Other required Screen methods can remain empty
     @Override public void show() {}
     @Override public void pause() {}
     @Override public void resume() {}

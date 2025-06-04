@@ -21,15 +21,12 @@ public class DatabaseManager {
 
     private void initializeDatabase() {
         try {
-            // For LibGDX desktop, use SQLite with local file path
             String dbPath = Gdx.files.local(DB_NAME).file().getAbsolutePath();
             String url = "jdbc:sqlite:" + dbPath;
 
-            // Load SQLite JDBC driver
             Class.forName("org.sqlite.JDBC");
             connection = DriverManager.getConnection(url);
 
-            // Enable foreign keys
             connection.createStatement().execute("PRAGMA foreign_keys = ON");
 
             createTables();

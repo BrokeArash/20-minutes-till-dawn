@@ -8,7 +8,7 @@ public class XPDrop {
     private static final float HEIGHT = 16f;
 
     private final Texture    texture;
-    private final float      x, y;      // bottom‐left corner in world‐coords
+    private final float      x, y;
     private final int        xpValue;
     private final Rectangle  bounds;
 
@@ -32,20 +32,16 @@ public class XPDrop {
         return bounds;
     }
 
-    /** Expose the underlying texture so we can draw it at screen coords. */
     public Texture getTexture() {
         return texture;
     }
 
-    /** Expose world‐space X and Y so we can convert to screen coords. */
     public float getWorldX() { return x; }
     public float getWorldY() { return y; }
 
-    /** These are the drop’s on‐screen dimensions (in world units). */
     public static float getWidth()  { return WIDTH; }
     public static float getHeight() { return HEIGHT; }
 
     public void dispose() {
-        // We assume `texture` is shared (GameAssetsManager.getDrop()), so do not dispose here.
     }
 }

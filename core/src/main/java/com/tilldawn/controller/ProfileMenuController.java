@@ -19,7 +19,6 @@ public class ProfileMenuController {
     }
 
     private void setupListeners() {
-        // “Back” button returns to MainMenu:
         view.getBackButton().addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -30,23 +29,10 @@ public class ProfileMenuController {
                     ));
             }
         });
-
-        // (You already have ChangeUsername, ChangePassword, DeleteAccount wiring.)
     }
 
-    /**
-     * Called whenever the user chooses a new avatar in the SelectBox.
-     * @param choice   The string chosen (“Abby” / “Hastur” / “Hina”)
-     * @param texture  The corresponding Texture instance from GameAssetsManager
-     */
     public void onAvatarChosen(String choice, Texture texture) {
-        // 1) Update the in-memory User object
         App.getCurrentUser().setAvatar(texture);
 
-        // 2) (Optional) Persist to database, e.g. store “avatar name” or path.
-        //    If you want to keep that choice between sessions, you might do:
-        //    App.getUserDatabase().updateAvatarPath(App.getCurrentUser().getId(), choice);
-        //
-        //    Then when you reload the user next time, you read the stored avatar name and reload that texture.
     }
 }

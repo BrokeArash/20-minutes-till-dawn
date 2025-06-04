@@ -23,11 +23,9 @@ public class ScoreBoardMenuController {
     }
 
     private void setupListeners() {
-        // Sort type change listener
         view.getSortType().addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                // Refresh the scores display when sort type changes
                 view.refreshScores();
             }
         });

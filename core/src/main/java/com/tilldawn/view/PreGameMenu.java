@@ -53,29 +53,23 @@ public class PreGameMenu implements Screen {
     public void show() {
         Gdx.input.setInputProcessor(stage);
 
-        // Clear previous actors
         table.clear();
         stage.clear();
 
         table.setFillParent(true);
 
-        // Title at top center
         table.add(new Label("PRE-GAME SETTINGS", skin, "title"))
             .colspan(2).padBottom(40).row();
 
-        // Hero selection
         table.add(new Label("HERO:", skin)).right().padRight(10).width(150);
         table.add(heroes).width(300).left().padBottom(20).row();
 
-        // Weapon selection
         table.add(new Label("WEAPON:", skin)).right().padRight(10).width(150);
         table.add(weapon).width(300).left().padBottom(20).row();
 
-        // Mode selection
         table.add(new Label("MODE:", skin)).right().padRight(10).width(150);
         table.add(mode).width(300).left().padBottom(40).row();
 
-        // Start button centered
         table.add(button)
             .colspan(2)
             .width(400)

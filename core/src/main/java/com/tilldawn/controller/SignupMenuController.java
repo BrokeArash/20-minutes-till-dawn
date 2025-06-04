@@ -23,7 +23,6 @@ public class SignupMenuController{
     }
 
     private void setupListeners() {
-        // Password validation listener
         view.getPassField().addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -31,7 +30,6 @@ public class SignupMenuController{
             }
         });
 
-        // Signup button listener
         view.getPlayButton().addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -76,7 +74,6 @@ public class SignupMenuController{
 
 
     private void handleSignup() {
-        // Clear previous errors
         view.setErrorUser("");
         view.setErrorPass("");
 
@@ -84,7 +81,6 @@ public class SignupMenuController{
         String password = view.getPassField().getText().trim();
         String securityAnswer = view.getSecBox().getSelected();
 
-        // Validation
         if (username.isEmpty()) {
             view.setErrorUser("Please enter a username");
             return;
@@ -109,7 +105,6 @@ public class SignupMenuController{
             UserDatabase userDatabase = App.getUserDatabase();
             if (userDatabase.registerUser(username, password, securityAnswer)) {
                 Gdx.app.log("Signup", "Account created for: " + username);
-                // Successful registration - go to login
                 Main.getMain().changeScreen(new LoginMenu(
                     new LoginMenuController(),
                     GameAssetsManager.getGameAssetsManager().getSkin()

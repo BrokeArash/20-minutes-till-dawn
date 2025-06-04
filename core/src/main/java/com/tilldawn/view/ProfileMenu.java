@@ -20,10 +20,9 @@ public class ProfileMenu implements Screen {
     private ProfileMenuController controller;
     private GameAssetsManager assetsManager;
 
-    // UI components
     private Table table;
     private SelectBox<String> avatarSelectBox;
-    private Image    avatarPreview;   // shows currently selected avatar
+    private Image    avatarPreview;
     private TextButton backButton;
     private TextButton changeUsernameButton;
     private TextButton changePasswordButton;
@@ -33,30 +32,23 @@ public class ProfileMenu implements Screen {
         this.controller = controller;
         this.assetsManager = GameAssetsManager.getGameAssetsManager();
 
-        // Stage + input
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
-        // Root table
         table = new Table(skin);
         table.setFillParent(true);
         table.pad(20);
         stage.addActor(table);
 
-        // Create buttons
         changeUsernameButton = new TextButton("Change Username", skin);
         changePasswordButton = new TextButton("Change Password", skin);
         deleteAccountButton   = new TextButton("Delete Account", skin);
         backButton            = new TextButton("Back", skin);
 
-        // Create the avatar SelectBox
         avatarSelectBox = new SelectBox<>(skin);
         avatarSelectBox.setItems("Abby", "Hastur", "Hina");
-        // Set selection to current user’s avatar name (if you store that string somewhere).
-        // For now, default to the first:
         avatarSelectBox.setSelected("Abby");
 
-        // Create an Image to preview the chosen avatar
         Texture initialTex = getTextureForChoice( avatarSelectBox.getSelected() );
         if (avatarPreview != null) {
             assetsManager.dispose();
@@ -65,20 +57,16 @@ public class ProfileMenu implements Screen {
         avatarPreview = new Image(new TextureRegionDrawable(initialTex));
         avatarPreview.setSize(100, 100);
 
-        // Wire up controller
         controller.setView(this);
 
-        // Listen for changes:
         avatarSelectBox.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 String choice = avatarSelectBox.getSelected();
                 Texture tex = getTextureForChoice(choice);
 
-                // Update the preview image
                 avatarPreview.setDrawable(new TextureRegionDrawable(tex));
 
-                // Let controller (and thus the model) know: set as user avatar
                 controller.onAvatarChosen(choice, tex);
             }
         });
@@ -89,7 +77,6 @@ public class ProfileMenu implements Screen {
         Gdx.input.setInputProcessor(stage);
         table.clear();
 
-        // Layout: first row: “Choose Avatar” label + SelectBox + preview
         table.add(new Label("Choose Avatar:", assetsManager.getSkin()))
             .padRight(10).left();
         table.add(avatarSelectBox).width(150).height(40).padRight(20);
@@ -97,7 +84,6 @@ public class ProfileMenu implements Screen {
 
         table.padBottom(30).row();
 
-        // Next rows: other buttons (centered horizontally)
         table.add(changeUsernameButton).colspan(2).fillX().uniformX().padBottom(10).row();
         table.add(changePasswordButton).colspan(2).fillX().uniformX().padBottom(10).row();
         table.add(deleteAccountButton).colspan(2).fillX().uniformX().padBottom(30).row();
@@ -121,13 +107,11 @@ public class ProfileMenu implements Screen {
     @Override public void hide()  {}
     @Override public void dispose() { stage.dispose(); }
 
-    // Called by the controller to wire up click events:
     public TextButton getBackButton()            { return backButton; }
     public TextButton getChangeUsernameButton()  { return changeUsernameButton; }
     public TextButton getChangePasswordButton()  { return changePasswordButton; }
     public TextButton getDeleteAccountButton()   { return deleteAccountButton; }
 
-    /** Helper: return the Texture object corresponding to a SelectBox choice. */
     private Texture getTextureForChoice(String choice) {
         switch (choice) {
             case "Abby":   return assetsManager.getAbbyPortrait();

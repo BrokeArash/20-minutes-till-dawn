@@ -35,7 +35,6 @@ public class Game {
         int seconds = (int) (timeRemaining % 60);
         int milliseconds = (int) ((timeRemaining - (minutes * 60) - seconds) * 100);
 
-        // For tense moments: show milliseconds when under 10 seconds
         if (timeRemaining < 10) {
             return String.format("%01d:%02d:%02d", minutes, seconds, milliseconds);
         }

@@ -53,11 +53,9 @@ public class ChangeUsernameMenu implements Screen {
         table.setFillParent(true);
         table.center();
 
-        // Title
         Label titleLabel = new Label("Change Username", skin, "title");
         titleLabel.setColor(Color.WHITE);
 
-        // Back button
         TextButton backButton = new TextButton("Back", skin);
         backButton.addListener(new ChangeListener() {
             @Override
@@ -66,7 +64,6 @@ public class ChangeUsernameMenu implements Screen {
             }
         });
 
-        // Submit button
         TextButton submitButton = new TextButton("Change Username", skin);
         submitButton.addListener(new ChangeListener() {
             @Override
@@ -75,7 +72,6 @@ public class ChangeUsernameMenu implements Screen {
             }
         });
 
-        // Layout
         table.add(titleLabel).padBottom(30).row();
         table.add(new Label("Current password:", skin)).padBottom(10).row();
         table.add(passwordField).width(600).padBottom(10).row();
@@ -92,7 +88,6 @@ public class ChangeUsernameMenu implements Screen {
         String password = passwordField.getText();
         String newUsername = newUsernameField.getText().trim();
 
-        // Validation
         if (password.isEmpty() || newUsername.isEmpty()) {
             errorLabel.setText("Please fill in all fields");
             return;
@@ -108,26 +103,21 @@ public class ChangeUsernameMenu implements Screen {
             return;
         }
 
-        // Verify password first
         if (!App.getUserDatabase().verifyPassword(currentUsername, password)) {
             errorLabel.setText("Password is incorrect");
             return;
         }
 
-        // Check if username already exists
         if (App.getUserDatabase().isUsernameTaken(newUsername)) {
             errorLabel.setText("Username already taken");
             return;
         }
 
-        // Update username in database
         if (App.getUserDatabase().updateUsername(currentUsername, newUsername)) {
-            // Update current user in App
             App.getCurrentUser().setUsername(newUsername);
             errorLabel.setText("Username updated successfully!");
             errorLabel.setColor(Color.GREEN);
 
-            // Return to profile after delay
             Timer.schedule(new Timer.Task() {
                 @Override
                 public void run() {

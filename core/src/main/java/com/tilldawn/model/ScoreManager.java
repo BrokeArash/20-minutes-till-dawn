@@ -14,16 +14,14 @@ public class ScoreManager {
         ScoreRecord record = new ScoreRecord(user, score, kill, time, gameMode);
         user.addScoreRecord(record);
         allScores.add(record);
-        Collections.sort(allScores); // Keep sorted
+        Collections.sort(allScores);
     }
 
-    // Get top N scores globally
     public List<ScoreRecord> getTopNScores(int n) {
         int endIndex = Math.min(n, allScores.size());
         return new ArrayList<>(allScores.subList(0, endIndex));
     }
 
-    // Get top N scores for a specific user
     public List<ScoreRecord> getUserTopScores(User user, int n) {
         return user.getScoreRecords().stream()
             .sorted()
@@ -31,7 +29,6 @@ public class ScoreManager {
             .collect(Collectors.toList());
     }
 
-    // Get all scores sorted
     public List<ScoreRecord> getAllScoresSorted() {
         return new ArrayList<>(allScores);
     }

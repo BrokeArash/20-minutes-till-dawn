@@ -64,11 +64,9 @@ public class ChangePasswordMenu implements Screen {
         table.setFillParent(true);
         table.center();
 
-        // Title
         Label titleLabel = new Label("Change Password", skin, "title");
         titleLabel.setColor(Color.WHITE);
 
-        // Back button
         TextButton backButton = new TextButton("Back", skin);
         backButton.addListener(new ChangeListener() {
             @Override
@@ -77,7 +75,6 @@ public class ChangePasswordMenu implements Screen {
             }
         });
 
-        // Submit button
         TextButton submitButton = new TextButton("Change Password", skin);
         submitButton.addListener(new ChangeListener() {
             @Override
@@ -86,7 +83,6 @@ public class ChangePasswordMenu implements Screen {
             }
         });
 
-        // Layout
         table.add(titleLabel).padBottom(30).row();
         table.add(new Label("Current password:", skin)).padBottom(10).row();
         table.add(currentPasswordField).width(600).padBottom(10).row();
@@ -106,7 +102,6 @@ public class ChangePasswordMenu implements Screen {
         String newPass = newPasswordField.getText();
         String confirmPass = confirmPasswordField.getText();
 
-        // Validation
         if (currentPass.isEmpty() || newPass.isEmpty() || confirmPass.isEmpty()) {
             errorLabel.setText("Please fill in all fields");
             return;
@@ -122,18 +117,15 @@ public class ChangePasswordMenu implements Screen {
             return;
         }
 
-        // Verify current password first
         if (!App.getUserDatabase().verifyPassword(username, currentPass)) {
             errorLabel.setText("Current password is incorrect");
             return;
         }
 
-        // Update password in database
         if (App.getUserDatabase().updatePassword(username, newPass)) {
             errorLabel.setText("Password updated successfully!");
             errorLabel.setColor(Color.GREEN);
 
-            // Return to profile after delay
             Timer.schedule(new Timer.Task() {
                 @Override
                 public void run() {

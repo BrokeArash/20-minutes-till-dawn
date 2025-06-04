@@ -20,7 +20,6 @@ public class SettingMenuController {
     public void setView(SettingMenu settingMenu) {
         this.view = settingMenu;
         setupListeners();
-        // No specific listeners needed here for now as UI interactions are handled in SettingMenu itself
     }
 
     private void setupListeners() {

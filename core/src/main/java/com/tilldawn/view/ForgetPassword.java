@@ -58,7 +58,6 @@ public class ForgetPassword implements Screen {
         confirmPasswordField.setPasswordMode(true);
         confirmPasswordField.setPasswordCharacter('*');
 
-        // Create and show security question screen
         showSecurityQuestionScreen();
     }
 
@@ -67,11 +66,9 @@ public class ForgetPassword implements Screen {
         table.setFillParent(true);
         table.center();
 
-        // Title
         Label titleLabel = new Label("Password Recovery", skin, "title");
         titleLabel.setColor(Color.WHITE);
 
-        // Verify button
         TextButton verifyButton = new TextButton("Verify Answer", skin);
         verifyButton.addListener(new ChangeListener() {
             @Override
@@ -90,7 +87,6 @@ public class ForgetPassword implements Screen {
             }
         });
 
-        // Layout
         table.add(titleLabel).padBottom(30).row();
         table.add(questionLabel).padBottom(20).row();
         table.add(answerField).width(200).padBottom(20).row();
@@ -105,11 +101,9 @@ public class ForgetPassword implements Screen {
         table.setFillParent(true);
         table.center();
 
-        // Title
         Label titleLabel = new Label("Reset Your Password", skin, "title");
         titleLabel.setColor(Color.WHITE);
 
-        // Submit button
         TextButton submitButton = new TextButton("Reset Password", skin);
         submitButton.addListener(new ChangeListener() {
             @Override
@@ -118,7 +112,6 @@ public class ForgetPassword implements Screen {
             }
         });
 
-        // Layout
         table.add(titleLabel).padBottom(30).row();
         table.add(new Label("Enter new password:", skin)).padBottom(10).row();
         table.add(newPasswordField).width(600).padBottom(10).row();
@@ -139,12 +132,10 @@ public class ForgetPassword implements Screen {
     }
 
     private String getSecurityQuestion() {
-        // Get from database - implement this in UserDatabase
         return "zavale aghl dari ?";
     }
 
     private boolean verifyAnswer(String answer) {
-        // Verify against database - implement this in UserDatabase
         return App.getUserDatabase().verifySecurityAnswer(username, answer);
     }
 
@@ -152,7 +143,6 @@ public class ForgetPassword implements Screen {
         String newPass = newPasswordField.getText();
         String confirmPass = confirmPasswordField.getText();
 
-        // Validation
         if (newPass.isEmpty() || confirmPass.isEmpty()) {
             errorLabel.setText("Please fill in both fields");
             return;
@@ -168,12 +158,10 @@ public class ForgetPassword implements Screen {
             return;
         }
 
-        // Update password in database
         if (App.getUserDatabase().updatePassword(username, newPass)) {
             errorLabel.setText("Password updated successfully!");
             errorLabel.setColor(Color.GREEN);
 
-            // Return to login after delay
             Timer.schedule(new Timer.Task() {
                 @Override
                 public void run() {

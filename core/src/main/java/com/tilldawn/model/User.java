@@ -6,33 +6,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class User {
-    private int id; // Add database ID
+    private int id;
     private String username;
     private String password;
-    private String sec; // security answer
-    private List<ScoreRecord> scoreRecords; // Add this field
+    private String sec;
+    private List<ScoreRecord> scoreRecords;
     private Texture avatar;
 
-    // Constructor for new users (without ID)
     public User(String username, String password, String sec) {
         this.username = username;
         this.password = password;
         this.sec = sec;
-        this.scoreRecords = new ArrayList<>(); // Initialize the list
+        this.scoreRecords = new ArrayList<>();
         this.avatar = GameAssetsManager.getGameAssetsManager().getRandomAvatar();
     }
 
-    // Constructor for existing users (with ID from database)
     public User(int id, String username, String password, String sec) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.sec = sec;
-        this.scoreRecords = new ArrayList<>(); // Initialize the list
+        this.scoreRecords = new ArrayList<>();
         this.avatar = GameAssetsManager.getGameAssetsManager().getRandomAvatar();
     }
 
-    // Add method to add a score record
     public void addScoreRecord(ScoreRecord record) {
         if (scoreRecords == null) {
             scoreRecords = new ArrayList<>();
@@ -40,20 +37,17 @@ public class User {
         scoreRecords.add(record);
     }
 
-    // Add method to get score records
     public List<ScoreRecord> getScoreRecords() {
         if (scoreRecords == null) {
             scoreRecords = new ArrayList<>();
         }
-        return new ArrayList<>(scoreRecords); // Return a copy to prevent external modification
+        return new ArrayList<>(scoreRecords);
     }
 
-    // Add method to set score records (useful when loading from database)
     public void setScoreRecords(List<ScoreRecord> scoreRecords) {
         this.scoreRecords = scoreRecords != null ? new ArrayList<>(scoreRecords) : new ArrayList<>();
     }
 
-    // Getters
     public int getId() {
         return id;
     }
@@ -70,7 +64,6 @@ public class User {
         return sec;
     }
 
-    // Setters
     public void setId(int id) {
         this.id = id;
     }
@@ -111,7 +104,6 @@ public class User {
     }
 
     public void setAvatar(Texture newAvatar) {
-        // Dispose old if you want. Or simply replace:
         if (this.avatar != null && this.avatar != newAvatar) {
             this.avatar.dispose();
         }

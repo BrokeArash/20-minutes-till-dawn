@@ -25,15 +25,12 @@ public class UserDatabase {
         int guestNumber = 1;
         String guestName;
 
-        // Find the next available guest username
         do {
             guestName = "guest" + guestNumber++;
         } while (isUsernameTaken(guestName));
 
-        // Create the guest user with default credentials
         User guestUser = new User(guestName, "guestpass", "guest");
 
-        // Add to database
         if (insertUser(guestUser)) {
             return guestUser;
         }
@@ -110,7 +107,6 @@ public class UserDatabase {
 
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows > 0) {
-                // Get the generated ID and set it on the user
                 ResultSet generatedKeys = pstmt.getGeneratedKeys();
                 if (generatedKeys.next()) {
                     user.setId(generatedKeys.getInt(1));
@@ -251,7 +247,6 @@ public class UserDatabase {
             return false;
         }
 
-        // First verify the password
         if (!verifyPassword(username, password)) {
             Gdx.app.log("UserDatabase", "User not found or password incorrect: " + username);
             return false;
@@ -341,7 +336,6 @@ public class UserDatabase {
         return null;
     }
 
-    // Score-related methods that would replace the JSON serialization logic
     public boolean saveScoreRecord(ScoreRecord record) {
         String sql = "INSERT INTO score_records (user_id, score, kills, time, game_mode, timestamp) VALUES (?, ?, ?, ?, ?, ?)";
 
@@ -380,7 +374,6 @@ public class UserDatabase {
                     rs.getInt("time"),
                     Mode.valueOf(rs.getString("game_mode"))
                 );
-                // Set the timestamp from database
                 record.setTimestamp(rs.getLong("timestamp"));
                 records.add(record);
             }
@@ -391,7 +384,6 @@ public class UserDatabase {
         return records;
     }
 
-    // Also add this method to get ALL score records from ALL users:
     public List<ScoreRecord> getAllScoreRecords() {
         List<ScoreRecord> records = new ArrayList<>();
         String sql = "SELECT sr.score, sr.kills, sr.time, sr.game_mode, sr.timestamp, " +
@@ -405,7 +397,6 @@ public class UserDatabase {
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
-                // Create user object
                 User user = new User(
                     rs.getInt("user_id"),
                     rs.getString("username"),
@@ -413,7 +404,6 @@ public class UserDatabase {
                     rs.getString("security_answer")
                 );
 
-                // Create score record
                 ScoreRecord record = new ScoreRecord(
                     user,
                     rs.getInt("score"),
@@ -422,7 +412,6 @@ public class UserDatabase {
                     Mode.valueOf(rs.getString("game_mode"))
                 );
 
-                // Set the timestamp from database
                 record.setTimestamp(rs.getLong("timestamp"));
                 records.add(record);
             }
@@ -449,6 +438,6 @@ public class UserDatabase {
             Gdx.app.error("UserDatabase", "Error retrieving max score", e);
         }
 
-        return 0; // Return 0 if no scores found or error occurred
+        return 0;
     }
 }

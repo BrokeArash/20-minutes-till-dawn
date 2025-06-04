@@ -24,13 +24,12 @@ public class Enemy {
         this.alive = true;
         rectangle = new Rectangle(x, y, EnemyEnum.ELDER.getTexture().getWidth(),
             EnemyEnum.ELDER.getTexture().getHeight());
-        this.attackCooldown = 2.0f; // Seconds between attacks
+        this.attackCooldown = 2.0f;
         this.attackTimer = 0;
         this.isAttacking = false;
     }
 
     public void update(float deltaTime, Player player) {
-        // Update attack timer
         if (isAttacking) {
             attackTimer += deltaTime;
             if (attackTimer >= attackCooldown) {
@@ -39,7 +38,6 @@ public class Enemy {
             }
         }
 
-        // Update rectangle position
         updateRectangle();
     }
 

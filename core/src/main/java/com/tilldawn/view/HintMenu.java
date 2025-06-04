@@ -28,29 +28,24 @@ public class HintMenu implements Screen {
         this.stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
-        // Buttons
         heroes = new TextButton("Heroes", skin);
         cheats = new TextButton("Cheats", skin);
         keys = new TextButton("Keys", skin);
         abilities = new TextButton("Abilities", skin);
         back = new TextButton("Back", skin);
 
-        // Label in the middle
         hintLabel = new Label("Hover over a button to get a hint.", skin);
 
-        // Main layout
         Table rootTable = new Table();
         rootTable.setFillParent(true);
         stage.addActor(rootTable);
 
-        // Top row: 4 buttons horizontally
         Table topButtonTable = new Table();
         topButtonTable.add(heroes).pad(10);
         topButtonTable.add(cheats).pad(10);
         topButtonTable.add(keys).pad(10);
         topButtonTable.add(abilities).pad(10);
 
-        // Layout structure
         rootTable.top().padTop(50);
         rootTable.add(topButtonTable).center().row();
         rootTable.add(hintLabel).expandY().center().row();

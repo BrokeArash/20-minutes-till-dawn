@@ -197,4 +197,20 @@ public class GameAssetsManager {
                 return hinaPortrait;
         }
     }
+
+    public Texture getCursor() {
+        return cursor;
+    }
+
+    public Texture getAbbyPortrait() {
+        return abbyPortrait;
+    }
+
+    public Texture getHasturPortrait() {
+        return hasturPortrait;
+    }
+
+    public Texture getHinaPortrait() {
+        return hinaPortrait;
+    }
 }

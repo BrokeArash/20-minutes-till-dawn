@@ -110,6 +110,14 @@ public class User {
         return username.hashCode();
     }
 
+    public void setAvatar(Texture newAvatar) {
+        // Dispose old if you want. Or simply replace:
+        if (this.avatar != null && this.avatar != newAvatar) {
+            this.avatar.dispose();
+        }
+        this.avatar = newAvatar;
+    }
+
     public Texture getAvatar() {
         return avatar;
     }

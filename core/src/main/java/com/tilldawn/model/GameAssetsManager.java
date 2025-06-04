@@ -59,11 +59,8 @@ public class GameAssetsManager {
         drop = new Texture("Images_grouped_1/Sprite/EyeMonsterProjecitle/EyeMonsterProjecitle.png");
 
 
-
-
         bullet = "Images_grouped_1/Sprite/Icon/Icon_Bullet_Storm.png";
         this.backgroundTexture = new Texture("background.png");
-
         reloadSound = Gdx.audio.newSound(Gdx.files.internal("SFX/AudioClip/Weapon_Shotgun_Reload.wav"));
         gunshot = Gdx.audio.newSound(Gdx.files.internal("SFX/AudioClip/single_shot.wav"));
         monsterAttack = Gdx.audio.newSound(Gdx.files.internal("SFX/AudioClip/Monster_2_Attack_Quick_01_WITH_ECHO.wav"));

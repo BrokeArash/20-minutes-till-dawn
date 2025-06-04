@@ -6,11 +6,11 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.tilldawn.Main;
 import com.tilldawn.controller.GameMenuController;
@@ -31,6 +31,8 @@ public class GameMenu implements Screen, InputProcessor {
     private ProgressBar xpBar;
     private TextField timerField;
     private Label label;
+    private boolean isPaused = false;
+
 
     // Shortcut to the player
     private Player player = App.getGame().getPlayer();
@@ -85,26 +87,28 @@ public class GameMenu implements Screen, InputProcessor {
         timerField.setSize(150, 30);
         timerField.setDisabled(true);
 
+
+
         // Create the Stage and add all actors
+
+
+    }
+
+    @Override
+    public void show() {
         stage = new Stage(new ScreenViewport());
         stage.addActor(bulletNum);
         stage.addActor(hpField);
         stage.addActor(killField);
         stage.addActor(levelField);
-        label = new Label("xp: " + player.getXp(), skin);
+        label = new Label("xp: " + player.getXp(), GameAssetsManager.getGameAssetsManager().getSkin());
         label.setPosition(3, Gdx.graphics.getHeight() - 250);
         label.setSize(150, 30);
         stage.addActor(label);
         stage.addActor(xpBar);
         stage.addActor(timerField);
-    }
-
-    @Override
-    public void show() {
-        // Let this class handle input (so we can detect touches for shooting)
         Gdx.input.setInputProcessor(this);
 
-        // Reset player position, etc., if needed
         App.getGame().getPlayer().setInitialPosition();
     }
 
@@ -114,12 +118,26 @@ public class GameMenu implements Screen, InputProcessor {
         Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // 2) Game logic updates
-        player.getWeapon().update(delta);           // weapon reloading, etc.
-        App.getGame().updateTime(delta);             // timer countdown
-        killField.setText(String.valueOf(App.getGame().getKill()));
+        if (!isPaused) {
+            // 2) Game logic updates
+            player.getWeapon().update(delta);
+            App.getGame().updateTime(delta);
 
-        // Update timer’s color based on time left
+            // 4) Draw the world (via your GameMenuController)
+            Main.getBatch().begin();
+            controller.updateGame(); // <<<< THIS only runs when not paused
+            Main.getBatch().end();
+        }
+
+        // 3) Handle reload key (you might want to move this inside the isPaused check too)
+        if (!isPaused && Gdx.input.isKeyPressed(Input.Keys.R) && !player.getWeapon().isReloading()) {
+            player.getWeapon().startReload();
+        }
+
+        // 5) Update HUD elements (these can update even when paused)
+        killField.setText(String.valueOf(App.getGame().getKill()));
+        timerField.setText(App.getGame().getFormattedTime());
+
         if (App.getGame().getTimeRemaining() < 30) {
             timerField.getStyle().fontColor = Color.RED;
         } else if (App.getGame().getTimeRemaining() < 60) {
@@ -127,37 +145,25 @@ public class GameMenu implements Screen, InputProcessor {
         } else {
             timerField.getStyle().fontColor = Color.BLACK;
         }
-        timerField.setText(App.getGame().getFormattedTime());
 
         if (App.getGame().getTimeRemaining() <= 0) {
             handleGameOver();
         }
 
-        // 3) Handle reload key
-        if (Gdx.input.isKeyPressed(Input.Keys.R) && !player.getWeapon().isReloading()) {
-            player.getWeapon().startReload();
-        }
-
-        // 4) Draw the world (via your GameMenuController)
-        Main.getBatch().begin();
-        controller.updateGame();
-        Main.getBatch().end();
-
-        // 5) Update all HUD elements:
         bulletNum.setText(String.valueOf(player.getWeapon().getCurrentAmmo()));
         hpField.setText(String.valueOf(player.getPlayerHealth()));
         levelField.setText(String.valueOf(player.getLevel()));
         label.setText("xp: " + player.getXp());
 
-        // Update XP bar’s range/value in case the player leveled up:
-        float newMaxXp = player.getLevel() * 20f; // or however you define XP-to-next-level
+        float newMaxXp = player.getLevel() * 20f;
         xpBar.setRange(0f, newMaxXp);
         xpBar.setValue(player.getXp());
 
-        // 6) Draw the Stage (HUD on top of world)
-        stage.act(Math.min(delta, 1/30f));
+        // 6) Draw the Stage (HUD)
+        stage.act(Math.min(delta, 1 / 30f));
         stage.draw();
     }
+
 
     private void handleGameOver() {
         // Save the final score and switch to a “game over” screen
@@ -196,7 +202,14 @@ public class GameMenu implements Screen, InputProcessor {
 
     // ——— InputProcessor to forward clicks to WeaponController ———
     @Override
-    public boolean keyDown(int keycode)         { return false; }
+    public boolean keyDown(int keycode) {
+        if (keycode == Input.Keys.ESCAPE) {
+            isPaused = !isPaused;
+            Main.getMain().changeScreen(new PauseMenu(this));
+            return true;
+        }
+        return false;
+    }
     @Override
     public boolean keyUp(int keycode)           { return false; }
     @Override
@@ -204,9 +217,30 @@ public class GameMenu implements Screen, InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        controller.getWeaponController().handleWeaponShoot(screenX, screenY);
+        // Convert screen coords to stage coords
+        Vector2 stageCoords = stage.screenToStageCoordinates(new Vector2(screenX, screenY));
+
+        // Try passing input to the stage first
+        InputEvent event = new InputEvent();
+        event.setType(InputEvent.Type.touchDown);
+        event.setStage(stage);
+        event.setStageX(stageCoords.x);
+        event.setStageY(stageCoords.y);
+        event.setPointer(pointer);
+        event.setButton(button);
+
+        if (stage.hit(stageCoords.x, stageCoords.y, true) != null && isPaused) {
+            // UI element was clicked — don't shoot
+            return true;
+        }
+
+        if (!isPaused) {
+            controller.getWeaponController().handleWeaponShoot(screenX, screenY);
+        }
+
         return false;
     }
+
     @Override public boolean touchUp(int screenX, int screenY, int pointer, int button)   { return false; }
 
     @Override

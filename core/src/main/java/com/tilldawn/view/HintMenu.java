@@ -64,11 +64,23 @@ public class HintMenu implements Screen {
         heroes.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                hintLabel.setText("SHANA ->   HP: 4   SPEED: 4\n\n\n" +
-                    "DIAMOND ->   HP: 7   SPEED: 1\n\n\n" +
-                    "SCARLET ->   HP: 3   SPEED: 5\n\n\n" +
-                    "LILITH ->   HP: 5   SPEED: 3\n\n\n" +
-                    "DASHER ->   HP: 2   SPEED: 10\n\n\n");
+                hintLabel.setText("""
+                    SHANA ->   HP: 4   SPEED: 4
+
+
+                    DIAMOND ->   HP: 7   SPEED: 1
+
+
+                    SCARLET ->   HP: 3   SPEED: 5
+
+
+                    LILITH ->   HP: 5   SPEED: 3
+
+
+                    DASHER ->   HP: 2   SPEED: 10
+
+
+                    """);
                 return true;
             }
         });
@@ -84,9 +96,17 @@ public class HintMenu implements Screen {
         keys.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                hintLabel.setText("WASD for movement\n\n\n" +
-                    "R for reload\n\n\n" +
-                    "left click for shoot\n\n\n");
+                hintLabel.setText("""
+                    WASD for movement
+
+
+                    R for reload
+
+
+                    left click for shoot
+
+
+                    """);
                 return true;
             }
         });
@@ -94,11 +114,23 @@ public class HintMenu implements Screen {
         abilities.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                hintLabel.setText("VITALITY ->  adds one HP\n\n\n" +
-                    "DAMAGER -> adds 25% damage for 10secs\n\n\n" +
-                    "PROCREASE -> adds 1 projectile\n\n\n" +
-                    "AMOCREASE -> adds 5 ammo to mag\n\n\n" +
-                    "SPEEDY -> doubles speed for 10 secs\n\n\n");
+                hintLabel.setText("""
+                    VITALITY ->  adds one HP
+
+
+                    DAMAGER -> adds 25% damage for 10secs
+
+
+                    PROCREASE -> adds 1 projectile
+
+
+                    AMOCREASE -> adds 5 ammo to mag
+
+
+                    SPEEDY -> doubles speed for 10 secs
+
+
+                    """);
                 return true;
             }
         });

@@ -18,10 +18,12 @@ public class Player {
     private Hero hero;
     private float posX = 0;
     private float posY = 0;
-    private float playerHealth = 100;
+    private float playerHealth;
     private Rectangle rect ;
     private float time = 0;
-    private float speed = 5;
+    private float speed;
+    private int xp = 0;
+    private int level = 1;
 
     public Player(Hero hero, Weapon weapon) {
         this.weapon = weapon;
@@ -29,6 +31,8 @@ public class Player {
         playerTexture = new Texture(hero.getCharacter_idle0());
         playerSprite = new Sprite(playerTexture);
         playerSprite.setSize(playerTexture.getWidth() * 3, playerTexture.getHeight() * 3);
+        this.playerHealth = hero.getBaseHp();
+        this.speed = hero.getSpeed();
     }
 
     public void setInitialPosition() {
@@ -126,5 +130,23 @@ public class Player {
         this.time = time;
     }
 
+    public void addXP(int amount) {
+        xp += amount;
+        if (xp >= 20*level) {
+            addLevel();
+        }
+    }
 
+    public int getXp() {
+        return xp;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void addLevel() {
+        this.level ++;
+        this.xp = 0;
+    }
 }

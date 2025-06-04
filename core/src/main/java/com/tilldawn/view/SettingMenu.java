@@ -44,7 +44,7 @@ public class SettingMenu implements Screen {
         table.add(volumeSlider).fillX().uniformX();
         table.row().pad(10, 0, 0, 0);
 
-        sfx = new CheckBox("on/off", skin);
+        sfx = new CheckBox("sfx", skin);
         table.add(sfx);
 
         // Back button

@@ -5,8 +5,6 @@ import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.tilldawn.model.enums.EnemyEnum;
 
@@ -26,10 +24,13 @@ public class GameAssetsManager {
     private Texture abbyPortrait;
     private Texture hasturPortrait;
     private Texture hinaPortrait;
+    private Texture drop;
     private Sound reloadSound;
     private Sound gunshot;
     private Sound monsterAttack;
+    private Sound monsterKill;
     private Sound monsterDamage;
+    private Sound dropGet;
 
     // Private constructor for singleton
     private GameAssetsManager() {
@@ -55,6 +56,8 @@ public class GameAssetsManager {
         abbyPortrait =  new Texture("Images_grouped_1/Sprite/T/T_Abby_Portrait.png");
         hasturPortrait = new Texture("Images_grouped_1/Sprite/T/T_Hastur_Portrait.png");
         hinaPortrait = new Texture("Images_grouped_1/Sprite/T/T_Hina_Portrait.png");
+        drop = new Texture("Images_grouped_1/Sprite/EyeMonsterProjecitle/EyeMonsterProjecitle.png");
+
 
 
 
@@ -64,7 +67,9 @@ public class GameAssetsManager {
         reloadSound = Gdx.audio.newSound(Gdx.files.internal("SFX/AudioClip/Weapon_Shotgun_Reload.wav"));
         gunshot = Gdx.audio.newSound(Gdx.files.internal("SFX/AudioClip/single_shot.wav"));
         monsterAttack = Gdx.audio.newSound(Gdx.files.internal("SFX/AudioClip/Monster_2_Attack_Quick_01_WITH_ECHO.wav"));
-        monsterDamage = Gdx.audio.newSound(Gdx.files.internal("SFX/AudioClip/Monster_2_RecieveAttack_HighIntensity_01.wav"));
+        monsterKill = Gdx.audio.newSound(Gdx.files.internal("SFX/AudioClip/Monster_2_RecieveAttack_HighIntensity_01.wav"));
+        dropGet = Gdx.audio.newSound(Gdx.files.internal("SFX/AudioClip/Obtain_Points_01.wav"));
+        monsterDamage = Gdx.audio.newSound(Gdx.files.internal("SFX/AudioClip/characterouch2-163912.mp3"));
 
     }
 
@@ -156,8 +161,20 @@ public class GameAssetsManager {
         return monsterAttack;
     }
 
+    public Sound getDropGet() {
+        return dropGet;
+    }
+
     public Sound getMonsterDamage() {
         return monsterDamage;
+    }
+
+    public Sound getMonsterKill() {
+        return monsterKill;
+    }
+
+    public Texture getDrop() {
+        return drop;
     }
 
     public void dispose() {
@@ -180,9 +197,4 @@ public class GameAssetsManager {
                 return hinaPortrait;
         }
     }
-
-    private long reloadSoundId;
-    private long gunshotId;
-    private long monsterDamageId;
-    private long monsterAttackId;
 }

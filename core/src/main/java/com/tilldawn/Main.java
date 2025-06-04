@@ -2,8 +2,10 @@ package com.tilldawn;
 
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.tilldawn.controller.SignupMenuController;
 import com.tilldawn.model.App;
@@ -20,6 +22,7 @@ public class Main extends Game {
     public void create() {
         main = this;
         batch = new SpriteBatch();
+
 
         App.initialize(); //initialize database
         setScreen(new SignupMenu(new SignupMenuController(), GameAssetsManager.getGameAssetsManager().getSkin()));

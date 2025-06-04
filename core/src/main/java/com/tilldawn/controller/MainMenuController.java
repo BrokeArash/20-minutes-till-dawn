@@ -59,7 +59,7 @@ public class MainMenuController {
         view.getTalentButton().addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                //TODO
+                Main.getMain().changeScreen(new HintMenu(new HintMenuController(), GameAssetsManager.getGameAssetsManager().getSkin()));
             }
         });
 

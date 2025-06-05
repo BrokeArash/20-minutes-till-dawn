@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.tilldawn.Main;
 import com.tilldawn.model.*;
+import com.tilldawn.model.enums.Keys;
 import com.tilldawn.view.GameEndMenu;
 import com.tilldawn.view.MainMenu;
 
@@ -64,19 +65,19 @@ public class PlayerController {
             player.getWeapon().startReload();
         }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.W)){
+        if (Gdx.input.isKeyPressed(Keys.UP.getKeys())){
             newY += player.getSpeed();
             moved = true;
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.D)){
+        if (Gdx.input.isKeyPressed(Keys.RIGHT.getKeys())){
             newX += player.getSpeed();
             moved = true;
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.S)){
+        if (Gdx.input.isKeyPressed(Keys.DOWN.getKeys())){
             newY -= player.getSpeed();
             moved = true;
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.A)){
+        if (Gdx.input.isKeyPressed(Keys.LEFT.getKeys())){
             newX -= player.getSpeed();
             player.getPlayerSprite().flip(true, false);
             moved = true;

@@ -70,9 +70,11 @@ public class ProfileMenuController {
                     String newUsername = input.getText();
                     if (db.updateUsername(currentUser.getUsername(), newUsername)) {
                         currentUser.setUsername(newUsername);
+                        view.getError().setText("Username updated successfully.");
                         hide();
                     } else {
                         text.setText("Username is taken or invalid.");
+                        view.getError().setText("Username is taken or invalid.");
                     }
                 }
             }
@@ -105,11 +107,14 @@ public class ProfileMenuController {
                     if (db.verifyPassword(currentUser.getUsername(), current)) {
                         if (db.updatePassword(currentUser.getUsername(), newPass)) {
                             Gdx.app.log("ProfileMenu", "Password updated successfully.");
+                            view.getError().setText("password updated successfully");
                         } else {
                             Gdx.app.error("ProfileMenu", "Failed to update password.");
+                            view.getError().setText("Failed to update password.");
                         }
                     } else {
                         Gdx.app.error("ProfileMenu", "Incorrect current password.");
+                        view.getError().setText("Incorrect current password.");
                     }
                 }
             }

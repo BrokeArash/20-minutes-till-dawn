@@ -27,6 +27,7 @@ public class ProfileMenu implements Screen {
     private TextButton changeUsernameButton;
     private TextButton changePasswordButton;
     private TextButton deleteAccountButton;
+    private Label error;
 
     public ProfileMenu(ProfileMenuController controller, Skin skin) {
         this.controller = controller;
@@ -44,6 +45,7 @@ public class ProfileMenu implements Screen {
         changePasswordButton = new TextButton("Change Password", skin);
         deleteAccountButton   = new TextButton("Delete Account", skin);
         backButton            = new TextButton("Back", skin);
+        error = new Label("", skin);
 
         avatarSelectBox = new SelectBox<>(skin);
         avatarSelectBox.setItems("Abby", "Hastur", "Hina");
@@ -87,7 +89,8 @@ public class ProfileMenu implements Screen {
         table.add(changeUsernameButton).colspan(2).fillX().uniformX().padBottom(10).row();
         table.add(changePasswordButton).colspan(2).fillX().uniformX().padBottom(10).row();
         table.add(deleteAccountButton).colspan(2).fillX().uniformX().padBottom(30).row();
-        table.add(backButton).colspan(2).fillX().uniformX();
+        table.add(backButton).colspan(2).fillX().uniformX().padBottom(30).row();
+        table.add(error).fillX().uniformX();
     }
 
     @Override
@@ -139,5 +142,9 @@ public class ProfileMenu implements Screen {
 
     public void setAvatarPreview(Image avatarPreview) {
         this.avatarPreview = avatarPreview;
+    }
+
+    public Label getError() {
+        return error;
     }
 }

@@ -8,6 +8,7 @@ import com.tilldawn.Main;
 import com.tilldawn.model.App;
 import com.tilldawn.model.Game;
 import com.tilldawn.model.GameAssetsManager;
+import com.tilldawn.view.KeyChangeMenu;
 import com.tilldawn.view.MainMenu;
 import com.tilldawn.view.SettingMenu;
 
@@ -55,6 +56,13 @@ public class SettingMenuController {
                 } else {
                     App.setIsSFXOn(true);
                 }
+            }
+        });
+
+        view.getKeybind().addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Main.getMain().changeScreen(new KeyChangeMenu());
             }
         });
     }

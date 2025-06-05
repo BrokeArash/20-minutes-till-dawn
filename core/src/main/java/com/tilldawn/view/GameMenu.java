@@ -17,6 +17,7 @@ import com.tilldawn.controller.GameMenuController;
 import com.tilldawn.model.App;
 import com.tilldawn.model.GameAssetsManager;
 import com.tilldawn.model.Player;
+import com.tilldawn.model.enums.Keys;
 
 public class GameMenu implements Screen, InputProcessor {
 
@@ -112,7 +113,7 @@ public class GameMenu implements Screen, InputProcessor {
             Main.getBatch().end();
         }
 
-        if (!isPaused && Gdx.input.isKeyPressed(Input.Keys.R) && !player.getWeapon().isReloading()) {
+        if (!isPaused && Gdx.input.isKeyPressed(Keys.RELOAD.getKeys()) && !player.getWeapon().isReloading()) {
             player.getWeapon().startReload();
         }
 

@@ -17,6 +17,7 @@ public class SettingMenu implements Screen {
     private SelectBox<String> musicSelectBox;
     private Slider volumeSlider;
     private CheckBox sfx;
+    private TextButton keybind;
 
 
     public SettingMenu(SettingMenuController controller, Skin skin) {
@@ -44,6 +45,9 @@ public class SettingMenu implements Screen {
 
         sfx = new CheckBox("sfx", skin);
         table.add(sfx);
+
+        keybind = new TextButton("change keys", skin);
+        table.add(keybind).colspan(2).fillX().uniformX();
 
         backButton = new TextButton("Back", skin);
         table.add(backButton).colspan(2).fillX().uniformX();
@@ -102,5 +106,9 @@ public class SettingMenu implements Screen {
 
     public CheckBox getSfx() {
         return sfx;
+    }
+
+    public TextButton getKeybind() {
+        return keybind;
     }
 }

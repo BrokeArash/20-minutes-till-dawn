@@ -1,6 +1,7 @@
 package com.tilldawn.view;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -11,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.tilldawn.controller.HintMenuController;
+import com.tilldawn.model.enums.Keys;
 
 public class HintMenu implements Screen {
 
@@ -91,17 +93,12 @@ public class HintMenu implements Screen {
         keys.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                hintLabel.setText("""
-                    WASD for movement
-
-
-                    R for reload
-
-
-                    left click for shoot
-
-
-                    """);
+                hintLabel.setText(Input.Keys.toString(Keys.UP.getKeys()) + "" +
+                    Input.Keys.toString(Keys.LEFT.getKeys()) + "" +
+                    Input.Keys.toString(Keys.DOWN.getKeys()) + "" +
+                    Input.Keys.toString(Keys.RIGHT.getKeys()) + " for movement\n\n\n" +
+                    Input.Keys.toString(Keys.RELOAD.getKeys()) + " for reload\n\n\n" +
+                    "left click for shoot");
                 return true;
             }
         });

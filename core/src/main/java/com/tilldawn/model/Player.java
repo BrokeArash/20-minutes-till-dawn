@@ -39,7 +39,7 @@ public class Player {
         this.hero = hero;
         playerTexture = new Texture(hero.getCharacter_idle0());
         playerSprite = new Sprite(playerTexture);
-        playerSprite.setSize(playerTexture.getWidth() * 3, playerTexture.getHeight() * 3);
+        playerSprite.setSize(playerTexture.getWidth() * 2, playerTexture.getHeight() * 2);
         this.playerHealth = hero.getBaseHp();
         this.speed = hero.getSpeed();
     }

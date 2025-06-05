@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.tilldawn.Main;
 import com.tilldawn.model.*;
 import com.tilldawn.model.Player;
+import com.tilldawn.model.enums.EnemyEnum;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -121,7 +122,7 @@ public class WeaponController {
                 );
 
                 if (bullet.getRectangle().overlaps(enemyScreenRect)) {
-                    if (App.isIsSFXOn()) {
+                    if (App.isIsSFXOn() && !enemy.getType().equals(EnemyEnum.TREE)) {
                         GameAssetsManager.getGameAssetsManager().getMonsterDamage().play();
                     }
                     enemy.takeDamage(bullet.getDamage());

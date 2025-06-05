@@ -2,69 +2,150 @@ package com.tilldawn.controller;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import com.tilldawn.Main;
 import com.tilldawn.model.*;
 import com.tilldawn.model.enums.EnemyEnum;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 public class EnemyController {
+    private static final int NUM_TREES = 15;
+    private static final float MIN_TREE_SEPARATION = 200f;
+    private static final int TREE_SPAWN_ATTEMPTS = 100;
     private static List<Enemy> enemies;
-    private PlayerController playerController;
-    private WorldController worldController;
-    private float spawnTimer;
-    private float spawnInterval = 2.0f;
-    private int maxEnemies = 10;
-    private float spawnRadius = 300f;
 
-    private Array<XPDrop> xpDrops;
+    private final PlayerController playerController;
+    private final WorldController worldController;
+    private final WeaponController weaponController;
 
-    private Array<EnemyEnum> spawnable = new Array<>();
+    private float elapsedTime;
+    private float spawnTimerTentacle;
+    private float spawnTimerEyeBat;
+    private boolean elderSpawned;
+    private boolean treesInitialized;
+    private float lastTreeDamageTime = -999f;
+    private static final float TREE_DAMAGE_COOLDOWN = 3f;
 
-    public EnemyController(PlayerController playerController, WorldController worldController) {
+
+    private final Array<EnemyEnum> tentaclePool;
+    private final Array<EnemyEnum> eyeBatPool;
+    private final Array<XPDrop> xpDrops;
+
+    public EnemyController(PlayerController playerController,
+                           WorldController worldController,
+                           WeaponController weaponController) {
         this.playerController = playerController;
         this.worldController = worldController;
+        this.weaponController = weaponController;
+
         enemies = new ArrayList<>();
         xpDrops = new Array<>();
 
-        spawnTimer = 0f;
-        for (EnemyEnum type : EnemyEnum.values()) {
-            if (type.getSpawnRate() > 0) {
-                spawnable.add(type);
-            }
-        }
+        elapsedTime = 0f;
+        spawnTimerTentacle = 0f;
+        spawnTimerEyeBat = 0f;
+        elderSpawned = false;
+        treesInitialized = false;
+
+        tentaclePool = new Array<>();
+        tentaclePool.add(EnemyEnum.TENTACLE_MONSTER);
+
+        eyeBatPool = new Array<>();
+        eyeBatPool.add(EnemyEnum.EYE_BAT);
     }
 
     public void update() {
         float deltaTime = Gdx.graphics.getDeltaTime();
-        Player player = playerController.getPlayer();
+        elapsedTime += deltaTime;
 
-        spawnTimer += deltaTime;
-        if (spawnTimer >= spawnInterval && enemies.size() < maxEnemies) {
-            spawnEnemy();
-            spawnTimer = 0f;
+        if (!treesInitialized) {
+            spawnStaticTrees();
+            treesInitialized = true;
         }
 
-        Iterator<Enemy> enemyIter = enemies.iterator();
-        while (enemyIter.hasNext()) {
-            Enemy enemy = enemyIter.next();
+        Player player = playerController.getPlayer();
+        float playerX = player.getPosX();
+        float playerY = player.getPosY();
+        float playerW = player.getPlayerSprite().getWidth();
+        float playerH = player.getPlayerSprite().getHeight();
+        Rectangle playerRect = new Rectangle(
+            playerX - playerW / 2f,
+            playerY - playerH / 2f,
+            playerW,
+            playerH
+        );
 
-            if (!enemy.isAlive()) {
-                if (App.isIsSFXOn()) {
-                    GameAssetsManager.getGameAssetsManager().getMonsterKill().play();
+        spawnTimerTentacle += deltaTime;
+        if (spawnTimerTentacle >= 3f) {
+            int i = (int)(elapsedTime / 3f);
+            int countToSpawn = (i / 30) + 1;
+            for (int n = 0; n < countToSpawn; n++) {
+                spawnMovingEnemy(EnemyEnum.TENTACLE_MONSTER);
+            }
+            spawnTimerTentacle -= 3f;
+        }
+
+        if (elapsedTime >= 10f / 4f) {
+            spawnTimerEyeBat += deltaTime;
+            if (spawnTimerEyeBat >= 10f) {
+                int t = (int) elapsedTime;
+                int count = MathUtils.floor((4 * (elapsedTime / 10f) - t + 30) / 30f);
+                count = Math.max(count, 1);
+                for (int n = 0; n < count; n++) {
+                    spawnMovingEnemy(EnemyEnum.EYE_BAT);
                 }
-                App.getGame().addKill();
+                spawnTimerEyeBat -= 10f;
+            }
+        }
 
-                spawnXpDrop(enemy.getPosX(), enemy.getPosY(), 3);
+        if (!elderSpawned && elapsedTime >= (App.getGame().getMode().getTime()*60f) / 2f) {
+            spawnMovingEnemy(EnemyEnum.ELDER);
+            elderSpawned = true;
+        }
 
-                enemyIter.remove();
+        Iterator<Enemy> iter = enemies.iterator();
+        while (iter.hasNext()) {
+            Enemy enemy = iter.next();
+
+            if (enemy.getType() == EnemyEnum.TREE) {
+                float treeX = enemy.getPosX();
+                float treeY = enemy.getPosY();
+                TextureRegion treeFrame =
+                    enemy.getType().getAnimation().getKeyFrame(elapsedTime);
+                float treeW = treeFrame.getRegionWidth();
+                float treeH = treeFrame.getRegionHeight();
+                Rectangle treeRect = new Rectangle(
+                    treeX - treeW / 2f,
+                    treeY - treeH / 2f,
+                    treeW,
+                    treeH
+                );
+
+                if (treeRect.overlaps(playerRect)) {
+                    if (elapsedTime - lastTreeDamageTime >= TREE_DAMAGE_COOLDOWN) {
+                        lastTreeDamageTime = elapsedTime;
+                        player.takeDamage(enemy.getType().getAttackDamage());
+                        if (App.isIsSFXOn()) {
+                            GameAssetsManager.getGameAssetsManager().getMonsterAttack().play();
+                        }
+                    }
+                }
+
+                Camera camera = worldController.getCamera();
+                float screenX = camera.getScreenX(treeX);
+                float screenY = camera.getScreenY(treeY);
+                Main.getBatch().draw(treeFrame, screenX, screenY, treeW, treeH);
+
                 continue;
             }
-
             enemy.update(deltaTime, player);
+
             if (enemy.canAttack(player)) {
                 enemy.startAttacking();
             } else {
@@ -72,118 +153,189 @@ public class EnemyController {
                 moveEnemy(enemy, deltaTime);
             }
 
-            Camera camera = worldController.getCamera();
-            float screenX = camera.getScreenX(enemy.getPosX());
-            float screenY = camera.getScreenY(enemy.getPosY());
-            Texture tex = enemy.getType().getTexture();
-            Main.getBatch().draw(tex, screenX, screenY);
-        }
-
-
-        float pw = player.getPlayerSprite().getWidth();
-        float ph = player.getPlayerSprite().getHeight();
-        Rectangle playerWorldBounds = new Rectangle(
-            player.getPosX() - pw/2f,
-            player.getPosY() - ph/2f,
-            pw,
-            ph
-        );
-
-        for (int i = xpDrops.size - 1; i >= 0; i--) {
-            XPDrop drop = xpDrops.get(i);
-
-            if (drop.collidesWith(playerWorldBounds)) {
-                player.addXP(drop.getXpValue());
+            if (!enemy.isAlive()) {
                 if (App.isIsSFXOn()) {
-                    GameAssetsManager.getGameAssetsManager().getDropGet().play();
+                    GameAssetsManager.getGameAssetsManager().getMonsterKill().play();
                 }
-                xpDrops.removeIndex(i);
+                App.getGame().addKill();
+                spawnXpDrop(enemy.getPosX(), enemy.getPosY(), 3);
+                iter.remove();
                 continue;
             }
 
             Camera camera = worldController.getCamera();
-            float screenX = camera.getScreenX(drop.getWorldX());
-            float screenY = camera.getScreenY(drop.getWorldY());
-
-            Main.getBatch().draw(
-                drop.getTexture(),
-                screenX,
-                screenY,
-                XPDrop.getWidth(),
-                XPDrop.getHeight()
-            );
+            float screenX = camera.getScreenX(enemy.getPosX());
+            float screenY = camera.getScreenY(enemy.getPosY());
+            TextureRegion frame =
+                enemy.getType().getAnimation().getKeyFrame(elapsedTime);
+            Main.getBatch().draw(frame, screenX, screenY, frame.getRegionWidth(), frame.getRegionHeight());
         }
 
+        handleBulletCollisions();
+
+        handleXpDrops(player);
     }
 
-    private void spawnEnemy() {
+    private void spawnStaticTrees() {
+        List<Enemy> placedTrees = new ArrayList<>();
+
+        for (int i = 0; i < NUM_TREES; i++) {
+            Enemy placed = null;
+
+            for (int attempt = 0; attempt < TREE_SPAWN_ATTEMPTS; attempt++) {
+                float worldX = MathUtils.random(-1000f, 1000f);
+                float worldY = MathUtils.random(-1000f, 1000f);
+
+                TextureRegion sampleFrame =
+                    EnemyEnum.TREE.getAnimation().getKeyFrame(elapsedTime);
+                float w = sampleFrame.getRegionWidth();
+                float h = sampleFrame.getRegionHeight();
+                if (!worldController.isPositionValid(worldX, worldY, w, h)) {
+                    continue;
+                }
+
+                boolean tooClose = false;
+                for (Enemy existing : placedTrees) {
+                    float dx = existing.getPosX() - worldX;
+                    float dy = existing.getPosY() - worldY;
+                    if (dx * dx + dy * dy < MIN_TREE_SEPARATION * MIN_TREE_SEPARATION) {
+                        tooClose = true;
+                        break;
+                    }
+                }
+                if (tooClose) continue;
+
+                placed = new Enemy(worldX, worldY, EnemyEnum.TREE);
+                placed.updateRectangle();
+                placedTrees.add(placed);
+                enemies.add(placed);
+                break;
+            }
+
+            if (placed == null) {
+                Gdx.app.log("EnemyController", "Could not place tree #" + i + " after " +
+                    TREE_SPAWN_ATTEMPTS + " attempts.");
+            }
+        }
+    }
+
+    /**
+     * Spawns one moving enemy of the given type around the player, at a fixed radius.
+     * (Does not create TREE here, since trees are static.)
+     */
+    private void spawnMovingEnemy(EnemyEnum type) {
         Player player = playerController.getPlayer();
         int maxAttempts = 10;
+        float spawnRadius = 300f;
 
         for (int attempt = 0; attempt < maxAttempts; attempt++) {
-            float angle = (float) (Math.random() * Math.PI * 2f);
-            float spawnX = player.getPosX() + (float) Math.cos(angle) * spawnRadius;
-            float spawnY = player.getPosY() + (float) Math.sin(angle) * spawnRadius;
-            EnemyEnum type = getRandomEnemyType();
-            float w = type.getTexture().getWidth() * 1.5f;
-            float h = type.getTexture().getHeight() * 1.5f;
+            float angle = MathUtils.random(0f, MathUtils.PI2);
+            float spawnX = player.getPosX() + MathUtils.cos(angle) * spawnRadius;
+            float spawnY = player.getPosY() + MathUtils.sin(angle) * spawnRadius;
+
+            TextureRegion sampleFrame =
+                type.getAnimation().getKeyFrame(elapsedTime);
+            float w = sampleFrame.getRegionWidth();
+            float h = sampleFrame.getRegionHeight();
 
             if (worldController.isPositionValid(spawnX, spawnY, w, h)) {
-                Enemy newEnemy = new Enemy(spawnX, spawnY, type);
-                newEnemy.updateRectangle();
-                enemies.add(newEnemy);
+                Enemy e = new Enemy(spawnX, spawnY, type);
+                e.updateRectangle();
+                enemies.add(e);
                 return;
             } else {
                 float clampedX = worldController.clampX(spawnX, w);
                 float clampedY = worldController.clampY(spawnY, h);
                 float dx = clampedX - player.getPosX();
                 float dy = clampedY - player.getPosY();
-                float distToPlayer = (float) Math.hypot(dx, dy);
+                float distToPlayer = (float)Math.hypot(dx, dy);
                 if (distToPlayer > 100f) {
-                    Enemy newEnemy = new Enemy(clampedX, clampedY, type);
-                    newEnemy.updateRectangle();
-                    enemies.add(newEnemy);
+                    Enemy e = new Enemy(clampedX, clampedY, type);
+                    e.updateRectangle();
+                    enemies.add(e);
                     return;
                 }
             }
         }
     }
 
-    private EnemyEnum getRandomEnemyType() {
-        if (spawnable.size == 0) {
-            return EnemyEnum.TENTACLE_MONSTER;
-        }
-        Array<EnemyEnum> weighted = new Array<>();
-        for (EnemyEnum t : spawnable) {
-            for (int i = 0; i < t.getSpawnRate(); i++) {
-                weighted.add(t);
+    private void handleBulletCollisions() {
+        ArrayList<Bullet> bullets = weaponController.getBullets();
+        Iterator<Bullet> bulletIter = bullets.iterator();
+
+        while (bulletIter.hasNext()) {
+            Bullet bullet = bulletIter.next();
+            boolean removed = false;
+
+            for (Enemy enemy : enemies) {
+                if (enemy.getType() == EnemyEnum.TREE) continue;
+
+                Camera camera = worldController.getCamera();
+                float enemyScreenX = camera.getScreenX(enemy.getPosX());
+                float enemyScreenY = camera.getScreenY(enemy.getPosY());
+                TextureRegion frame =
+                    enemy.getType().getAnimation().getKeyFrame(elapsedTime);
+                Rectangle enemyRect = new Rectangle(
+                    enemyScreenX,
+                    enemyScreenY,
+                    frame.getRegionWidth(),
+                    frame.getRegionHeight()
+                );
+
+                if (bullet.getRectangle().overlaps(enemyRect)) {
+                    if (App.isIsSFXOn()) {
+                        GameAssetsManager.getGameAssetsManager().getMonsterDamage().play();
+                    }
+                    enemy.takeDamage(bullet.getDamage());
+                    bulletIter.remove();
+                    removed = true;
+                    break;
+                }
+            }
+
+            if (!removed && isBulletOffScreen(bullet)) {
+                bulletIter.remove();
             }
         }
-        return weighted.random();
     }
 
-    private void moveEnemy(Enemy enemy, float deltaTime) {
-        Player player = playerController.getPlayer();
-        float dirX = player.getPosX() - enemy.getPosX();
-        float dirY = player.getPosY() - enemy.getPosY();
-        float distance = (float) Math.hypot(dirX, dirY);
+    private boolean isBulletOffScreen(Bullet bullet) {
+        return bullet.getSprite().getX() < 0 ||
+            bullet.getSprite().getX() > Gdx.graphics.getWidth() ||
+            bullet.getSprite().getY() < 0 ||
+            bullet.getSprite().getY() > Gdx.graphics.getHeight();
+    }
 
-        if (distance > 0) {
-            float moveX = (dirX / distance) * enemy.getSpeed() * deltaTime;
-            float moveY = (dirY / distance) * enemy.getSpeed() * deltaTime;
-            float newX = enemy.getPosX() + moveX;
-            float newY = enemy.getPosY() + moveY;
+    private void handleXpDrops(Player player) {
+        for (int i = xpDrops.size - 1; i >= 0; i--) {
+            XPDrop drop = xpDrops.get(i);
 
-            if (worldController.isPositionValid(newX, newY,
-                enemy.getType().getTexture().getWidth() * 1.5f,
-                enemy.getType().getTexture().getHeight() * 1.5f)) {
-                enemy.setPosX(newX);
-                enemy.setPosY(newY);
+            float pw = player.getPlayerSprite().getWidth();
+            float ph = player.getPlayerSprite().getHeight();
+            Rectangle playerRect = new Rectangle(
+                player.getPosX() - pw / 2f,
+                player.getPosY() - ph / 2f,
+                pw, ph
+            );
+
+            if (drop.collidesWith(playerRect)) {
+                player.addXP(drop.getXpValue());
+                if (App.isIsSFXOn()) {
+                    GameAssetsManager.getGameAssetsManager().getDropGet().play();
+                }
+                xpDrops.removeIndex(i);
             } else {
-                enemy.setPosX(worldController.clampX(newX, enemy.getType().getTexture().getWidth()));
-                enemy.setPosY(worldController.clampY(newY, enemy.getType().getTexture().getHeight()));
+                Camera camera = worldController.getCamera();
+                float screenX = camera.getScreenX(drop.getWorldX());
+                float screenY = camera.getScreenY(drop.getWorldY());
+                Main.getBatch().draw(
+                    drop.getTexture(),
+                    screenX,
+                    screenY,
+                    XPDrop.getWidth(),
+                    XPDrop.getHeight()
+                );
             }
-            enemy.updateRectangle();
         }
     }
 
@@ -201,48 +353,31 @@ public class EnemyController {
         return enemies;
     }
 
-    public void removeEnemy(Enemy enemy) {
-        enemies.remove(enemy);
-    }
+    private void moveEnemy(Enemy enemy, float deltaTime) {
+        Player player = playerController.getPlayer();
+        float dirX = player.getPosX() - enemy.getPosX();
+        float dirY = player.getPosY() - enemy.getPosY();
+        float distance = (float)Math.hypot(dirX, dirY);
 
-    public PlayerController getPlayerController() {
-        return playerController;
-    }
+        if (distance > 0) {
+            float moveX = (dirX / distance) * enemy.getSpeed() * deltaTime;
+            float moveY = (dirY / distance) * enemy.getSpeed() * deltaTime;
+            float newX = enemy.getPosX() + moveX;
+            float newY = enemy.getPosY() + moveY;
 
-    public void setPlayerController(PlayerController playerController) {
-        this.playerController = playerController;
-    }
+            TextureRegion frame = enemy.getType().getAnimation().getKeyFrame(elapsedTime);
+            float w = frame.getRegionWidth();
+            float h = frame.getRegionHeight();
 
-    public float getSpawnTimer() {
-        return spawnTimer;
-    }
-
-    public void setSpawnTimer(float spawnTimer) {
-        this.spawnTimer = spawnTimer;
-    }
-
-    public float getSpawnInterval() {
-        return spawnInterval;
-    }
-
-    public void setSpawnInterval(float spawnInterval) {
-        this.spawnInterval = spawnInterval;
-    }
-
-    public int getMaxEnemies() {
-        return maxEnemies;
-    }
-
-    public void setMaxEnemies(int maxEnemies) {
-        this.maxEnemies = maxEnemies;
-    }
-
-    public float getSpawnRadius() {
-        return spawnRadius;
-    }
-
-    public void setSpawnRadius(float spawnRadius) {
-        this.spawnRadius = spawnRadius;
+            if (worldController.isPositionValid(newX, newY, w, h)) {
+                enemy.setPosX(newX);
+                enemy.setPosY(newY);
+            } else {
+                enemy.setPosX(worldController.clampX(newX, w));
+                enemy.setPosY(worldController.clampY(newY, h));
+            }
+            enemy.updateRectangle();
+        }
     }
 
     public void dispose() {

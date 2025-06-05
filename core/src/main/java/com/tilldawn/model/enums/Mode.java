@@ -6,7 +6,7 @@ public enum Mode {
     T20("20 minutes", 20),
     T10("10 minutes", 10),
     T5("5 minutes", 5),
-    T2("2 minutes", 1),
+    T2("2 minutes", 2),
     ;
 
     private String name;

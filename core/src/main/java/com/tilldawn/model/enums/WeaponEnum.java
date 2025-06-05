@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 public enum WeaponEnum {
     REVOLVER("Revolver", 20, 1, 1, 6, "Images_grouped_1/Sprite/RevolverStill/RevolverStill.png"),
     SHOTGUN("Shotgun", 10, 4, 1, 2, "Images_grouped_1/Sprite/T/T_Shotgun_SS_0.png"),
-    SMG("SMGs dual", 8, 1, 2, 24, "Images_grouped_1/Sprite/SMGStill/SMGStill.png"),
+    SMG("SMGs dual", 8, 1, 2, 24, "Images_grouped_1/Sprite/T/T_DualSMGs_Icon.png"),
     ;
 
     private String name;

@@ -171,9 +171,6 @@ public class GameAssetsManager {
 
     public void dispose() {
 
-        for (EnemyEnum type : EnemyEnum.values()) {
-            type.getTexture().dispose();
-        }
     }
     public Texture getRandomAvatar() {
         int choice = (int) (Math.random() * 3);

@@ -37,7 +37,7 @@ public enum EnemyEnum {
     private int spawnRate;
     private Texture[] textures;
     private Animation<TextureRegion> animation;
-    private float attackDamage;
+    private int attackDamage;
     private float attackRange;
 
     EnemyEnum(
@@ -45,7 +45,7 @@ public enum EnemyEnum {
         int hp,
         int spawnRate,
         String[] texturePaths,
-        float attackDamage,
+        int attackDamage,
         float attackRange
     ) {
         this.name = name;
@@ -67,7 +67,7 @@ public enum EnemyEnum {
         return animation;
     }
 
-    public float getAttackDamage()  { return attackDamage; }
+    public int getAttackDamage()  { return attackDamage; }
     public float getAttackRange()   { return attackRange; }
     public int getHp()              { return hp; }
     public int getSpawnRate()       { return spawnRate; }

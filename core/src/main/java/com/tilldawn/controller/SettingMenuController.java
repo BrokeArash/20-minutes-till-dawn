@@ -52,9 +52,9 @@ public class SettingMenuController {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (view.getSfx().isChecked()) {
-                    App.setIsSFXOn(false);
+                    App.setSFXOn(false);
                 } else {
-                    App.setIsSFXOn(true);
+                    App.setSFXOn(true);
                 }
             }
         });

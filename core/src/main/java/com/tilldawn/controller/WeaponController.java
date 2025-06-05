@@ -9,7 +9,6 @@ import com.tilldawn.Main;
 import com.tilldawn.model.*;
 import com.tilldawn.model.Player;
 import com.tilldawn.model.enums.EnemyEnum;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -27,7 +26,7 @@ public class WeaponController {
 
     public void update() {
         weapon.getGunSprite().draw(Main.getBatch());
-
+        weapon.autoReload();
         updateBullets();
         handleBulletCollisions();
     }
@@ -80,7 +79,7 @@ public class WeaponController {
         }
 
         weapon.shootBullet();
-        if (App.isIsSFXOn()) {
+        if (App.isSFXOn()) {
             weapon.getGunshot().play();
         }
     }
@@ -122,7 +121,7 @@ public class WeaponController {
                 );
 
                 if (bullet.getRectangle().overlaps(enemyScreenRect)) {
-                    if (App.isIsSFXOn() && !enemy.getType().equals(EnemyEnum.TREE)) {
+                    if (App.isSFXOn() && !enemy.getType().equals(EnemyEnum.TREE)) {
                         GameAssetsManager.getGameAssetsManager().getMonsterDamage().play();
                     }
                     enemy.takeDamage(bullet.getDamage());
@@ -145,36 +144,7 @@ public class WeaponController {
             bullet.getSprite().getY() > Gdx.graphics.getHeight();
     }
 
-    public Weapon getWeapon() {
-        return weapon;
-    }
-
-    public void setWeapon(Weapon weapon) {
-        this.weapon = weapon;
-    }
-
-    public Player getPlayer() {
-        return player;
-    }
-
-    public void setPlayer(Player player) {
-        this.player = player;
-    }
-
     public ArrayList<Bullet> getBullets() {
         return bullets;
     }
-
-    public void setBullets(ArrayList<Bullet> bullets) {
-        this.bullets = bullets;
-    }
-
-    public WorldController getWorldController() {
-        return worldController;
-    }
-
-    public void setWorldController(WorldController worldController) {
-        this.worldController = worldController;
-    }
-
 }

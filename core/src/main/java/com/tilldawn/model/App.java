@@ -1,17 +1,12 @@
 package com.tilldawn.model;
 
 
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-
 public class App {
     private static Game game;
     private static User currentUser;
     private static UserDatabase userDatabase;
-    private static ScoreManager scoreManager;
-    private static boolean isSFXOn = true;
+    private static boolean SFXOn = true;
+    private static boolean autoReload = false;
 
     public static void initialize() {
         userDatabase = new UserDatabase();
@@ -22,13 +17,6 @@ public class App {
             initialize();
         }
         return userDatabase;
-    }
-
-    public static ScoreManager getScoreManager() {
-        if (scoreManager == null) {
-            scoreManager = new ScoreManager();
-        }
-        return scoreManager;
     }
 
     public static Game getGame() {
@@ -47,11 +35,19 @@ public class App {
         App.currentUser = currentUser;
     }
 
-    public static boolean isIsSFXOn() {
-        return isSFXOn;
+    public static boolean isSFXOn() {
+        return SFXOn;
     }
 
-    public static void setIsSFXOn(boolean isSFXOn) {
-        App.isSFXOn = isSFXOn;
+    public static void setSFXOn(boolean SFXOn) {
+        App.SFXOn = SFXOn;
+    }
+
+    public static boolean isAutoReload() {
+        return autoReload;
+    }
+
+    public static void setAutoReload(boolean autoReload) {
+        App.autoReload = autoReload;
     }
 }

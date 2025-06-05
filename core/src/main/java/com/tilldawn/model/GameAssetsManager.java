@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.tilldawn.model.enums.EnemyEnum;
@@ -20,7 +21,7 @@ public class GameAssetsManager {
     private Preferences preferences;
     private final String bullet;
     private Texture backgroundTexture;
-    private Texture cursor;
+    private Pixmap cursor;
     private Texture abbyPortrait;
     private Texture hasturPortrait;
     private Texture hinaPortrait;
@@ -50,7 +51,7 @@ public class GameAssetsManager {
         float volume = preferences.getFloat("musicVolume", 0.5f);
         currentMusic.setVolume(volume);
 
-        cursor = new Texture("Images_grouped_1/Sprite/T/T_CursorSprite.png");
+        cursor = new Pixmap(Gdx.files.internal("Images_grouped_1/Sprite/T/T_CursorSprite.png"));
         abbyPortrait =  new Texture("Images_grouped_1/Sprite/T/T_Abby_Portrait.png");
         hasturPortrait = new Texture("Images_grouped_1/Sprite/T/T_Hastur_Portrait.png");
         hinaPortrait = new Texture("Images_grouped_1/Sprite/T/T_Hina_Portrait.png");
@@ -185,7 +186,7 @@ public class GameAssetsManager {
         }
     }
 
-    public Texture getCursor() {
+    public Pixmap getCursor() {
         return cursor;
     }
 

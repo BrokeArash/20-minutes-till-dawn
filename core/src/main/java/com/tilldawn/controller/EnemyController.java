@@ -131,7 +131,7 @@ public class EnemyController {
                     if (elapsedTime - lastTreeDamageTime >= TREE_DAMAGE_COOLDOWN) {
                         lastTreeDamageTime = elapsedTime;
                         player.takeDamage(enemy.getType().getAttackDamage());
-                        if (App.isIsSFXOn()) {
+                        if (App.isSFXOn()) {
                             GameAssetsManager.getGameAssetsManager().getMonsterAttack().play();
                         }
                     }
@@ -154,7 +154,7 @@ public class EnemyController {
             }
 
             if (!enemy.isAlive()) {
-                if (App.isIsSFXOn()) {
+                if (App.isSFXOn()) {
                     GameAssetsManager.getGameAssetsManager().getMonsterKill().play();
                 }
                 App.getGame().addKill();
@@ -283,7 +283,7 @@ public class EnemyController {
                 );
 
                 if (bullet.getRectangle().overlaps(enemyRect)) {
-                    if (App.isIsSFXOn()) {
+                    if (App.isSFXOn()) {
                         GameAssetsManager.getGameAssetsManager().getMonsterDamage().play();
                     }
                     enemy.takeDamage(bullet.getDamage());
@@ -320,7 +320,7 @@ public class EnemyController {
 
             if (drop.collidesWith(playerRect)) {
                 player.addXP(drop.getXpValue());
-                if (App.isIsSFXOn()) {
+                if (App.isSFXOn()) {
                     GameAssetsManager.getGameAssetsManager().getDropGet().play();
                 }
                 xpDrops.removeIndex(i);

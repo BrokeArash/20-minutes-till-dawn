@@ -3,6 +3,7 @@ package com.tilldawn;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.tilldawn.controller.SignupMenuController;
@@ -14,6 +15,7 @@ public class Main extends Game {
     private static Main main;
     private static SpriteBatch batch;
     private static boolean blackAndWhite = false;
+    private Cursor cursor;
 
     private static ShaderProgram grayscaleShader;
 
@@ -22,10 +24,14 @@ public class Main extends Game {
         main = this;
         batch = new SpriteBatch();
 
+
+
         initGrayscaleShader();
 
         App.initialize();
         setScreen(new SignupMenu(new SignupMenuController(), GameAssetsManager.getGameAssetsManager().getSkin()));
+        cursor = Gdx.graphics.newCursor(GameAssetsManager.getGameAssetsManager().getCursor(), 0, 0);
+        Gdx.graphics.setCursor(cursor);
         GameAssetsManager.getGameAssetsManager().playMusic();
     }
 

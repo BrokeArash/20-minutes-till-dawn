@@ -17,7 +17,7 @@ public class Player {
     private Hero hero;
     private float posX = 0;
     private float posY = 0;
-    private float playerHealth;
+    private int playerHealth;
     private Rectangle rect;
     private float time = 0;
     private float speed;
@@ -168,11 +168,11 @@ public class Player {
         this.posY = posY;
     }
 
-    public float getPlayerHealth() {
+    public int getPlayerHealth() {
         return playerHealth;
     }
 
-    public void takeDamage(float amount) {
+    public void takeDamage(int amount) {
         this.playerHealth -= amount;
     }
 

@@ -80,7 +80,7 @@ public class Enemy {
 
     private void attack(Player player) {
         player.takeDamage(type.getAttackDamage());
-        if (App.isIsSFXOn()) {
+        if (App.isSFXOn()) {
             GameAssetsManager.getGameAssetsManager()
                 .getMonsterAttack().play();
         }

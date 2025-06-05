@@ -66,7 +66,7 @@ public class KeyChangeMenu implements Screen {
         back.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Main.getMain().changeScreen(new MainMenu(new MainMenuController(), skin)); // Replace with your actual main menu screen
+                Main.getMain().changeScreen(new MainMenu(new MainMenuController(), skin));
             }
         });
     }

@@ -3,9 +3,11 @@ package com.tilldawn.view;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.tilldawn.Main;
@@ -23,6 +25,7 @@ public class PauseMenu implements Screen {
     private TextButton giveUp;
     private Label messageLabel;
     private GameMenu gameMenu;
+    private CheckBox bwCheckbox;
     private Skin skin = GameAssetsManager.getGameAssetsManager().getSkin();
 
     public PauseMenu(GameMenu gameMenu) {
@@ -35,6 +38,14 @@ public class PauseMenu implements Screen {
         this.cheat = new TextButton("Cheats", skin);
         this.abilities = new TextButton("Abilities", skin);
         this.giveUp = new TextButton("Give Up", skin);
+        bwCheckbox = new CheckBox("Black & White Mode", skin);
+        bwCheckbox.setChecked(Main.isBlackAndWhite());
+        bwCheckbox.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeListener.ChangeEvent event, Actor actor) {
+                Main.setBlackAndWhite(bwCheckbox.isChecked());
+            }
+        });
 
         this.messageLabel = new Label("", skin);
         messageLabel.setColor(Color.RED);
@@ -45,6 +56,7 @@ public class PauseMenu implements Screen {
         table.add(cheat).pad(10).row();
         table.add(abilities).pad(10).row();
         table.add(giveUp).pad(10).row();
+        table.add(bwCheckbox).pad(10).row();
         table.add(messageLabel).pad(20).row();
 
         stage.addActor(table);

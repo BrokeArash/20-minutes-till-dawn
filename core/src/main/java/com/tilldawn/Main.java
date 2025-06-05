@@ -4,7 +4,6 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Cursor;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.tilldawn.controller.SignupMenuController;
@@ -24,6 +23,8 @@ public class Main extends Game {
     public void create() {
         main = this;
         batch = new SpriteBatch();
+
+
 
         initGrayscaleShader();
 

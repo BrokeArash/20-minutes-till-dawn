@@ -7,6 +7,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.tilldawn.model.enums.EnemyEnum;
 
 public class GameAssetsManager {
     private static GameAssetsManager gameAssetsManager;
@@ -185,6 +186,10 @@ public class GameAssetsManager {
         }
     }
 
+    public Pixmap getCursor() {
+        return cursor;
+    }
+
     public Texture getAbbyPortrait() {
         return abbyPortrait;
     }
@@ -195,9 +200,5 @@ public class GameAssetsManager {
 
     public Texture getHinaPortrait() {
         return hinaPortrait;
-    }
-
-    public Pixmap getCursor() {
-        return cursor;
     }
 }

@@ -28,16 +28,8 @@ public class GameMenuController {
         }
     }
 
-    public PlayerController getPlayerController() {
-        return playerController;
-    }
-
     public WeaponController getWeaponController() {
         return weaponController;
-    }
-
-    public EnemyController getEnemyController() {
-        return enemyController;
     }
 
     public GameMenu getView() {

@@ -1,7 +1,6 @@
 package com.tilldawn.controller;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
@@ -9,13 +8,12 @@ import com.badlogic.gdx.utils.Array;
 import com.tilldawn.Main;
 import com.tilldawn.model.*;
 import com.tilldawn.model.enums.EnemyEnum;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 public class EnemyController {
-    private static final int NUM_TREES = 15;
+    private static final int NUM_TREES = 25;
     private static final float MIN_TREE_SEPARATION = 200f;
     private static final int TREE_SPAWN_ATTEMPTS = 100;
     private static List<Enemy> enemies;
@@ -131,7 +129,7 @@ public class EnemyController {
                     if (elapsedTime - lastTreeDamageTime >= TREE_DAMAGE_COOLDOWN) {
                         lastTreeDamageTime = elapsedTime;
                         player.takeDamage(enemy.getType().getAttackDamage());
-                        if (App.isIsSFXOn()) {
+                        if (App.isSFXOn()) {
                             GameAssetsManager.getGameAssetsManager().getMonsterAttack().play();
                         }
                     }
@@ -154,7 +152,7 @@ public class EnemyController {
             }
 
             if (!enemy.isAlive()) {
-                if (App.isIsSFXOn()) {
+                if (App.isSFXOn()) {
                     GameAssetsManager.getGameAssetsManager().getMonsterKill().play();
                 }
                 App.getGame().addKill();
@@ -219,10 +217,6 @@ public class EnemyController {
         }
     }
 
-    /**
-     * Spawns one moving enemy of the given type around the player, at a fixed radius.
-     * (Does not create TREE here, since trees are static.)
-     */
     private void spawnMovingEnemy(EnemyEnum type) {
         Player player = playerController.getPlayer();
         int maxAttempts = 10;
@@ -283,7 +277,7 @@ public class EnemyController {
                 );
 
                 if (bullet.getRectangle().overlaps(enemyRect)) {
-                    if (App.isIsSFXOn()) {
+                    if (App.isSFXOn()) {
                         GameAssetsManager.getGameAssetsManager().getMonsterDamage().play();
                     }
                     enemy.takeDamage(bullet.getDamage());
@@ -320,7 +314,7 @@ public class EnemyController {
 
             if (drop.collidesWith(playerRect)) {
                 player.addXP(drop.getXpValue());
-                if (App.isIsSFXOn()) {
+                if (App.isSFXOn()) {
                     GameAssetsManager.getGameAssetsManager().getDropGet().play();
                 }
                 xpDrops.removeIndex(i);

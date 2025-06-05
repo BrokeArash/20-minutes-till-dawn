@@ -28,10 +28,6 @@ public class XPDrop {
         return xpValue;
     }
 
-    public Rectangle getBounds() {
-        return bounds;
-    }
-
     public Texture getTexture() {
         return texture;
     }

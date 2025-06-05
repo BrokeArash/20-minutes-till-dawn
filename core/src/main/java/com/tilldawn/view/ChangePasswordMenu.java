@@ -13,8 +13,6 @@ import com.tilldawn.Main;
 import com.tilldawn.controller.ProfileMenuController;
 import com.tilldawn.model.App;
 
-import java.util.concurrent.ScheduledExecutorService;
-
 public class ChangePasswordMenu implements Screen {
 
     private Stage stage;

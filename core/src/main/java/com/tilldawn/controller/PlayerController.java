@@ -14,13 +14,10 @@ import java.awt.*;
 
 public class PlayerController {
     private Player player;
-    private float speed;
     private WorldController worldController;
 
     public PlayerController(Player player){
         this.player = player;
-        this.speed = player.getHero().getSpeed();
-
         player.setPosX(0);
         player.setPosY(0);
 
@@ -117,9 +114,5 @@ public class PlayerController {
 
     public Player getPlayer() {
         return player;
-    }
-
-    public void setPlayer(Player player) {
-        this.player = player;
     }
 }

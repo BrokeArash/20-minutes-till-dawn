@@ -6,13 +6,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.tilldawn.Main;
 import com.tilldawn.model.App;
-import com.tilldawn.model.Game;
 import com.tilldawn.model.GameAssetsManager;
 import com.tilldawn.view.KeyChangeMenu;
 import com.tilldawn.view.MainMenu;
 import com.tilldawn.view.SettingMenu;
-
-import java.util.Set;
 
 public class SettingMenuController {
 
@@ -52,9 +49,9 @@ public class SettingMenuController {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (view.getSfx().isChecked()) {
-                    App.setIsSFXOn(false);
+                    App.setSFXOn(false);
                 } else {
-                    App.setIsSFXOn(true);
+                    App.setSFXOn(true);
                 }
             }
         });

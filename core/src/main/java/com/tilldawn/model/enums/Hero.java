@@ -90,65 +90,10 @@ public enum Hero {
         return speed;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setBaseHp(int baseHp) {
-        this.baseHp = baseHp;
-    }
-
-    public void setSpeed(int speed) {
-        this.speed = speed;
-    }
-
     public String getCharacter_idle0() {
         return character_idle0;
     }
 
-    public String getCharacter_idle1() {
-        return character_idle1;
-    }
-
-    public String getCharacter_idle2() {
-        return character_idle2;
-    }
-
-    public String getCharacter_idle3() {
-        return character_idle3;
-    }
-
-    public String getCharacter_idle4() {
-        return character_idle4;
-    }
-
-    public String getCharacter_idle5() {
-        return character_idle5;
-    }
-
-    public Texture getCharacter_idle0_tex() {
-        return character_idle0_tex;
-    }
-
-    public Texture getCharacter_idle1_tex() {
-        return character_idle1_tex;
-    }
-
-    public Texture getCharacter_idle2_tex() {
-        return character_idle2_tex;
-    }
-
-    public Texture getCharacter_idle3_tex() {
-        return character_idle3_tex;
-    }
-
-    public Texture getCharacter_idle4_tex() {
-        return character_idle4_tex;
-    }
-
-    public Texture getCharacter_idle5_tex() {
-        return character_idle5_tex;
-    }
 
     public Animation<Texture> getCharacter_idle_frames() {
         return character_idle_frames;

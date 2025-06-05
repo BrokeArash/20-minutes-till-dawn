@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.tilldawn.Main;
 import com.tilldawn.controller.SettingMenuController;
+import com.tilldawn.model.App;
 import com.tilldawn.model.GameAssetsManager;
 
 public class SettingMenu implements Screen {
@@ -21,6 +22,7 @@ public class SettingMenu implements Screen {
     private Slider volumeSlider;
     private CheckBox sfx;
     private CheckBox bwCheckbox;
+    private CheckBox autoReload;
     private TextButton keybind;
 
     public SettingMenu(SettingMenuController controller, Skin skin) {
@@ -59,8 +61,18 @@ public class SettingMenu implements Screen {
                 Main.setBlackAndWhite(bwCheckbox.isChecked());
             }
         });
+        autoReload = new CheckBox("auto reload", skin);
+        autoReload.setChecked(false);
+        autoReload.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeListener.ChangeEvent event, Actor actor) {
+                App.setAutoReload(autoReload.isChecked());
+            }
+        });
+
 
         table.add(bwCheckbox).colspan(2).left();
+        table.add(autoReload).colspan(2).left();
         table.row().pad(10, 0, 0, 0);
 
         keybind = new TextButton("Change Keys", skin);

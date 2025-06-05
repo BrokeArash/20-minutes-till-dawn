@@ -88,23 +88,4 @@ public class DatabaseManager {
         }
         return connection;
     }
-
-    public void closeConnection() {
-        try {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
-                Gdx.app.log("DatabaseManager", "Database connection closed");
-            }
-        } catch (SQLException e) {
-            Gdx.app.error("DatabaseManager", "Error closing database connection", e);
-        }
-    }
-
-    public boolean testConnection() {
-        try {
-            return connection != null && !connection.isClosed();
-        } catch (SQLException e) {
-            return false;
-        }
-    }
 }

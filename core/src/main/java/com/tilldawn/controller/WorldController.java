@@ -7,7 +7,6 @@ import com.tilldawn.Main;
 import com.tilldawn.model.Camera;
 import com.tilldawn.model.GameAssetsManager;
 
-import java.awt.*;
 
 public class WorldController {
     private PlayerController playerController;
@@ -71,22 +70,5 @@ public class WorldController {
         float maxY = backgroundHeight / 2f - entityHeight;
 
         return Math.max(minY, Math.min(maxY, y));
-    }
-
-    public float[] getWorldBounds(float entityWidth, float entityHeight) {
-        return new float[] {
-            -backgroundWidth / 2f,
-            backgroundWidth / 2f - entityWidth,
-            -backgroundHeight / 2f,
-            backgroundHeight / 2f - entityHeight
-        };
-    }
-
-    public float getBackgroundWidth() {
-        return backgroundWidth;
-    }
-
-    public float getBackgroundHeight() {
-        return backgroundHeight;
     }
 }

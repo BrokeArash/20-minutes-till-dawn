@@ -31,47 +31,19 @@ public enum WeaponEnum {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public int getDamage() {
         return damage;
-    }
-
-    public void setDamage(int damage) {
-        this.damage = damage;
-    }
-
-    public int getProjectile() {
-        return projectile;
-    }
-
-    public void setProjectile(int projectile) {
-        this.projectile = projectile;
     }
 
     public int getTimeReload() {
         return timeReload;
     }
 
-    public void setTimeReload(int timeReload) {
-        this.timeReload = timeReload;
-    }
-
     public int getAmmoMax() {
         return ammoMax;
     }
 
-    public void setAmmoMax(int ammoMax) {
-        this.ammoMax = ammoMax;
-    }
-
     public String getGun() {
         return gun;
-    }
-
-    public Texture getGunTexture() {
-        return gunTexture;
     }
 }

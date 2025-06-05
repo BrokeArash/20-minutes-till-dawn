@@ -1,7 +1,6 @@
 package com.tilldawn.model;
 
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.tilldawn.model.enums.EnemyEnum;
 
 
@@ -54,15 +53,6 @@ public class Enemy {
         }
     }
 
-    public void checkCollisionWithPlayer(Player player) {
-        if (this.rectangle.overlaps(player.getRect())) {
-            player.takeDamage(type.getAttackDamage());
-            if (type != EnemyEnum.TREE) {
-                this.isAttacking = true;
-            }
-        }
-    }
-
     public boolean canAttack(Player player) {
         float dx = player.getPosX() - posX;
         float dy = player.getPosY() - posY;
@@ -80,7 +70,7 @@ public class Enemy {
 
     private void attack(Player player) {
         player.takeDamage(type.getAttackDamage());
-        if (App.isIsSFXOn()) {
+        if (App.isSFXOn()) {
             GameAssetsManager.getGameAssetsManager()
                 .getMonsterAttack().play();
         }
@@ -105,14 +95,8 @@ public class Enemy {
     public void setPosY(float py) { this.posY = py; }
 
     public float getSpeed() { return speed; }
-    public void setSpeed(float s) { this.speed = s; }
 
     public Rectangle getRectangle() {
         return rectangle;
-    }
-
-    /** Returns the current frame of this enemy’s idle animation */
-    public TextureRegion getCurrentFrame() {
-        return type.getAnimation().getKeyFrame(stateTime);
     }
 }

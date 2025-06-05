@@ -30,24 +30,6 @@ public class User {
         this.avatar = GameAssetsManager.getGameAssetsManager().getRandomAvatar();
     }
 
-    public void addScoreRecord(ScoreRecord record) {
-        if (scoreRecords == null) {
-            scoreRecords = new ArrayList<>();
-        }
-        scoreRecords.add(record);
-    }
-
-    public List<ScoreRecord> getScoreRecords() {
-        if (scoreRecords == null) {
-            scoreRecords = new ArrayList<>();
-        }
-        return new ArrayList<>(scoreRecords);
-    }
-
-    public void setScoreRecords(List<ScoreRecord> scoreRecords) {
-        this.scoreRecords = scoreRecords != null ? new ArrayList<>(scoreRecords) : new ArrayList<>();
-    }
-
     public int getId() {
         return id;
     }
@@ -76,9 +58,6 @@ public class User {
         this.password = password;
     }
 
-    public void setSec(String sec) {
-        this.sec = sec;
-    }
 
     @Override
     public String toString() {

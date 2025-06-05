@@ -62,10 +62,6 @@ public class Game {
         return timeRemaining;
     }
 
-    public boolean isTimerActive() {
-        return timerActive;
-    }
-
     public int getTime() {
         return (mode.getTime() * 60) - (int) timeRemaining;
     }
@@ -88,13 +84,5 @@ public class Game {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public void setKill(int kill) {
-        this.kill = kill;
-    }
-
-    public void setTime(int time) {
-        this.time = time;
     }
 }

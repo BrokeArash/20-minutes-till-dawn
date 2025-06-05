@@ -16,4 +16,8 @@ public class HintMenuController {
     public void backToMainMenu() {
         Main.getMain().changeScreen(new MainMenu(new MainMenuController(), GameAssetsManager.getGameAssetsManager().getSkin()));
     }
+
+    public HintMenu getView() {
+        return view;
+    }
 }

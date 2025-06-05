@@ -41,14 +41,6 @@ public class Camera {
         return worldY - y + (Gdx.graphics.getHeight() / 2f);
     }
 
-    public float getWorldX(float screenX) {
-        return screenX + x - (Gdx.graphics.getWidth() / 2f);
-    }
-
-    public float getWorldY(float screenY) {
-        return screenY + y - (Gdx.graphics.getHeight() / 2f);
-    }
-
     public float getX() { return x; }
     public float getY() { return y; }
 }

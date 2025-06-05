@@ -49,7 +49,7 @@ public class Weapon {
         if (!isReloading && getCurrentAmmo() < getMaxAmmo()) {
             isReloading = true;
             reloadTimer = 0;
-            if (App.isIsSFXOn()) {
+            if (App.isSFXOn()) {
                 reloadSound.play();
             }
         }
@@ -94,5 +94,11 @@ public class Weapon {
 
     public void setMaxAmmo(int maxAmmo) {
         this.maxAmmo = maxAmmo;
+    }
+
+    public void autoReload() {
+        if (currentAmmo < 1 && App.isAutoReload()) {
+            setCurrentAmmoMax();
+        }
     }
 }
